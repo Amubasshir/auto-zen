@@ -3,6 +3,7 @@
 ## Product Name
 
 **AutoZen**
+Structured learning tracking dashboard for AI automation learners with progress, streaks, notes, and portfolio tracking.
 
 ---
 
