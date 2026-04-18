@@ -1,18 +1,27 @@
 ## Current feature
 
-<!-- Feature name and short description -->
+Dashboard UI Phase 1 — ShadCN setup, dashboard route, main layout, and global styles.
 
 ## Status
 
-<!-- Not Started || In Progress || Completed -->
+In Progress
 
 ## Goals
 
-<!-- Goals and requirements -->
+- Initialize ShadCN UI and install required components
+- Create dashboard route at `/dashboard`
+- Build main dashboard layout matching the reference screenshot
+- Add any global styles needed
+
+## References
+
+- @/lib/mock-data.ts
+- @dashboard.html
+- @style.css
 
 ## Noted
 
-<!-- Any extra note -->
+Spec: `context/features/dashboard-phase-1-spec.md`
 
 # History
 
