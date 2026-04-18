@@ -1,209 +1,227 @@
-# AutoZen Project Specification
+# AutoZen Project Specification (project_spec.md)
 
 ## Product Name
 
 **AutoZen**
 
-## Core Problem
+---
 
-New AI automation learners often fail not because the learning path is bad, but because they lose structure while following it.
+# Core Problem
 
-Common problems:
+New AI automation learners often lose structure, continuity, and motivation while following a long roadmap.
 
-- Watch random YouTube tutorials without continuity
-- Jump between tools (n8n, agents, Python, APIs) without a roadmap
-- Learn unplanned and forget where they left off
-- Don’t know what to study today
-- Add resources in scattered places (bookmarks, Notion, notes, browser tabs)
-- Build projects but don’t track them as portfolio assets
-- Lose momentum and quit halfway through
+Problems:
 
-This creates:
+- Random, unstructured learning
+- No progress tracking
+- No “what do I do today?” guidance
+- Resources scattered across tools
+- Projects not tracked as portfolio assets
+- Progress lost across devices
+- Learners quit before finishing
 
-- fragmented learning
-- low completion rates
-- no measurable progress
-- weak portfolio outcomes
-- slower path to becoming an AI Automation Builder
+---
 
-## Solution
+# Solution
 
-AutoZen is a structured learning tracking dashboard built specifically for AI automation learners following a 6-month roadmap.
+AutoZen is an authenticated learning tracking dashboard for AI automation learners following a structured 6-month roadmap.
 
 It combines:
 
-- Structured roadmap tracking
-- Daily learning guidance
-- Progress tracking
-- Streak & consistency system
-- Custom resource management
-- Project portfolio tracking
-- Notes and reflection
-
-AutoZen helps learners stay on track, finish the roadmap, and turn learning into real project outcomes.
-
-## Target Users
-
-### Primary User
-
-**AI automation learners**
-People following a structured path to become an AI Automation Builder in ~6 months.
-
-### Secondary User (future)
-
-- AI automation freelancers
-- Internal automation teams
-- Automation agencies onboarding juniors
-
-## MVP Scope (V1)
-
-### Included in MVP
-
-- 6-month roadmap tracking
-- Month → Week → Item → Task progress tracking
-- Today View (daily learning dashboard)
-- Progress dashboard
-- Streak tracking
-- Custom learning resources
+- Roadmap tracking
+- Daily Today view
+- Cloud-synced progress
+- Streaks
+- Custom resources
 - Notes
-- Project portfolio tracker
-- Inactivity recovery prompts
-- Local-first persistence (browser storage)
+- Project portfolio tracking
+- Inactivity recovery
 
-### Excluded from MVP (Later Versions)
+---
 
-- Journal module
-- AI coaching assistant
-- Team collaboration
-- User accounts
-- Cloud sync
-- Social/community features
-- Paid marketplace/templates
+# Target Users
 
-## Core Features
+Primary:
 
-## 1. Onboarding
+- AI automation learners
 
-First-time user setup:
+Secondary (future):
 
-Questions:
+- Freelancers
+- Internal automation teams
+- Agencies onboarding juniors
 
-- Which path are you following?
-  - No-Code Path
-  - Developer Path
+---
 
-- Hours per week available
+# MVP Scope (V1)
+
+Included:
+
+- Authentication
+- Onboarding
+- Today View
+- Progress Dashboard
+- Month / Week / Item tracking
+- Custom Resources
+- Notes
+- Project Portfolio
+- Streak Tracking
+- Inactivity Recovery
+- Cloud Sync
+
+Explicitly Excluded:
+
+- Journal (V2)
+- AI coach (V2)
+- Team mode (V2)
+- Marketplace (V2)
+- Community (V2)
+
+---
+
+# Core Features
+
+## 1. Authentication
+
+Use:
+
+- NextAuth v5 (Auth.js)
+
+Providers:
+
+- Email/password
+- GitHub OAuth
+
+User actions:
+
+- Sign up
+- Sign in
+- Log out
+- Resume progress across devices
+
+Protected data:
+
+- Progress
+- Notes
+- Custom resources
+- Portfolio projects
+- Streaks
+
+---
+
+## 2. Onboarding
+
+After signup ask:
+
+- Learning path
+  - No-Code
+  - Developer
+
+- Weekly hours
 
 - Weekly learning target
 
 - Start date
 
-Based on this:
+Generate:
 
-- initialize roadmap
-- personalize pacing
-- generate “Today” learning queue
+- Personalized pacing
+- Today queue
 
-## 2. Header Bar
+Store in user profile.
 
-Persistent header:
+---
 
-Shows:
+## 3. Header Bar
 
-- AutoZen logo/title
-- Overall Progress Bar
-- Global completion %
-- Current Streak (🔥)
-- Resume Last Item quick button
+Show:
 
-## 3. Left Sidebar
+- AutoZen logo
+- Global progress %
+- Overall progress bar
+- Current streak
+- Resume last item
+- User avatar menu
+
+---
+
+## 4. Left Sidebar
 
 Contains:
 
 - Dashboard
 - Today
-- 6 Month roadmap navigation
+- 6 month roadmap
 
 Each month card shows:
 
 - Month title
-- Progress bar
-- Done/Total count
+- Mini progress bar
+- Done / Total count
 
 Bottom:
 
 - 28-day activity grid
 
-## 4. Today View (Primary Daily Screen)
+---
 
-This is the default screen.
+## 5. Today View
 
-Shows:
+Default screen.
 
-- Today’s recommended learning item
-- Continue unfinished item
+Show:
+
+- Recommended learning item
+- Resume unfinished item
 - Pending tasks
-- Time estimate for today
+- Estimated time
 - Streak status
-- Resume where you left off
 
-## 5. Dashboard Overview
+---
 
-Shows:
+## 6. Dashboard Overview
 
-- Overall Progress %
-- Items Completed
-- Months Started
-- Current Streak
+Show:
 
-Below:
+- Overall progress
+- Items completed
+- Months started
+- Current streak
 
-6 month cards grid:
+---
 
-Each shows:
+## 7. Month View
 
-- Goal
-- Progress
-- Milestone
-- Open Month button
-
-## 6. Month View
-
-Each month contains:
+Contains:
 
 - Month goal
-- Month milestone
-- Month progress bar
+- Milestone
+- Progress bar
+- 4 week sections
 
-Below:
+---
 
-4 Week Sections
+## 8. Week Sections
 
-## 7. Week Sections
+Each week has:
 
-Each week includes:
-
-- Expand/collapse section
+- Expand/collapse
 - Item list
 - Notes button
 - Add Resource button
 
-## 8. Item Tracking
+---
 
-Each learning item contains:
+## 9. Item Tracking
 
-- Checkbox complete/incomplete
+Each item has:
+
+- Checkbox
 - Item title
-- Task progress (ex: 3/6)
-- Open Detail
+- Task progress
+- Open detail
 
-Inside item detail:
-
-- Resource link
-- Task checklist
-- Mark complete
-
-Completing updates:
+Updates:
 
 - Item progress
 - Week progress
@@ -211,9 +229,11 @@ Completing updates:
 - Global progress
 - Streak
 
-## 9. Custom Resource Feature
+Cloud synced.
 
-Users can add their own resources per week.
+---
+
+## 10. Custom Resources
 
 Fields:
 
@@ -234,77 +254,104 @@ Difficulty:
 - Intermediate
 - Advanced
 
-Estimated duration
+Duration
 
-Optional custom tasks
+Subtasks:
 
-## 10. Notes
+- tasks[]
 
-Per-week notes.
+Features:
 
-Freeform text.
+- edit
+- delete
+- included in progress math
+
+Stored per user.
+
+---
+
+## 11. Notes
+
+Per week notes.
 
 Auto-save.
 
-## 11. Project Portfolio Tracker
+User can:
 
-Track projects built from roadmap.
+- create note
+- edit note
+- clear note content
 
-Each project stores:
+Show:
+
+- Last saved timestamp
+
+Stored in DB.
+
+---
+
+## 12. Project Portfolio Tracker
+
+Fields:
 
 - Title
 
-- Project type
+Status:
 
-- Status
-  - Planned
-  - In Progress
-  - Completed
+- Planned
+- In Progress
+- Completed
+
+Optional:
 
 - GitHub URL
-
 - Demo URL
-
 - Loom URL
+- Case Study
+- Completion Date
 
-- Case Study Notes
+Stored per user.
 
-- Completion date
+---
 
-## 12. Streak System
+## 13. Streak System
 
-Actions that count:
+Counts:
 
-- Complete item
-- Complete task
-- Add project progress
+- Item completion
+- Task completion
+- Project progress
 
 Logic:
 
-- Activity today + yesterday → streak +1
-- Miss a day → reset
+- yesterday + today = streak +1
+- missed day = reset
 
-## 13. Inactivity Recovery
+---
 
-After 3 days:
+## 14. Inactivity Recovery
 
-- Resume where you left off
+3 days inactive:
 
-After 5 days:
+- Resume prompt
 
-- You’re falling behind
+5 days inactive:
 
-After 7+ days:
+- Falling behind warning
 
-- Offer restart plan
+7+ days:
 
-## Data Model
+- Restart suggestion
 
-## Static Roadmap Data
+---
+
+# Data Models
+
+## Static Roadmap (Hardcoded Seed Data)
 
 ### Month
 
-```ts
+```ts id="a1x7mn"
 type Month = {
   id: string;
   monthNumber: number;
@@ -318,7 +365,7 @@ type Month = {
 
 ### Week
 
-```ts
+```ts id="b2y8po"
 type Week = {
   id: string;
   monthId: string;
@@ -330,7 +377,7 @@ type Week = {
 
 ### Item
 
-```ts
+```ts id="c3z9qr"
 type Item = {
   id: string;
   weekId: string;
@@ -342,7 +389,7 @@ type Item = {
 
 ### Task
 
-```ts
+```ts id="d4u1st"
 type Task = {
   id: string;
   itemId: string;
@@ -350,126 +397,289 @@ type Task = {
 };
 ```
 
-## User State Data
+---
 
-### User
+## User
 
-```ts
+```ts id="e5v2tu"
 type User = {
+  id: string;
+
+  name?: string;
+  image?: string;
+
+  email: string;
+  passwordHash?: string;
+  githubId?: string;
+
   pathType: 'no-code' | 'developer';
+
   weeklyHours: number;
   weeklyTarget: number;
   startDate: string;
+
+  createdAt: Date;
 };
 ```
 
-### RoadmapProgress
+---
 
-```ts
+## Session
+
+```ts id="f6w3uv"
+type Session = {
+  id: string;
+  userId: string;
+  expiresAt: Date;
+};
+```
+
+---
+
+## Account
+
+```ts id="g7x4vw"
+type Account = {
+  id: string;
+  userId: string;
+
+  provider: string;
+  providerAccountId: string;
+
+  accessToken?: string;
+  refreshToken?: string;
+};
+```
+
+---
+
+## RoadmapProgress
+
+```ts id="h8y5wx"
 type RoadmapProgress = {
+  id: string;
+
+  userId: string;
+
   completedItems: Record<string, boolean>;
-  completedTasks: Record<string, boolean>;
+
+  completedTasks: Record<string, Record<string, boolean>>;
+  // outer key = itemId, inner key = taskId
+
   lastActiveItem: string;
 };
 ```
 
-### CustomResource
+---
 
-```ts
+## CustomResource
+
+```ts id="i9z6xy"
 type CustomResource = {
   id: string;
+  userId: string;
   weekId: string;
+
   title: string;
   url: string;
+
   type: string;
   difficulty: string;
   duration: string;
+
   tasks: string[];
-  createdAt: string;
+
+  createdAt: Date;
 };
 ```
 
-### Note
+---
 
-```ts
+## Note
+
+```ts id="j1a7yz"
 type Note = {
   id: string;
+  userId: string;
   weekId: string;
+
   content: string;
-  updatedAt: string;
+
+  updatedAt: Date;
 };
 ```
 
-### ProjectPortfolio
+---
 
-```ts
+## ProjectPortfolio
+
+```ts id="k2b8za"
 type ProjectPortfolio = {
   id: string;
+  userId: string;
+
   title: string;
-  status: string;
+
+  status: 'planned' | 'in-progress' | 'completed';
+
   githubUrl?: string;
   demoUrl?: string;
   loomUrl?: string;
+
   caseStudy?: string;
-  completedAt?: string;
+
+  completedAt?: Date;
 };
 ```
 
-### Streak
+---
 
-```ts
+## Streak
+
+```ts id="l3c9ab"
 type Streak = {
+  userId: string;
+
   count: number;
+
   lastDate: string;
+
   activeDays: string[];
 };
 ```
 
-## Persistence Strategy
+---
 
-Use localStorage only.
+# Persistence Strategy
+
+## Primary
+
+MongoDB Atlas
+
+Source of truth.
+
+---
+
+## Optional localStorage Cache
+
+Used only for:
+
+- optimistic UI writes
+- temporary offline drafts
 
 Keys:
 
-```ts
-az: user;
-az: progress;
-az: tasks;
-az: notes;
-az: streak;
-az: custom;
-az: projects;
+```ts id="m4d1bc"
+az - cache - progress;
+az - cache - notes;
+az - cache - drafts;
 ```
 
-## Tech Stack
+Rule:
 
-- Next.js 16
-- React 19
+localStorage is write-ahead only.
+
+Server response always overwrites local cache.
+
+Server is always source of truth.
+
+Conflict resolution:
+
+- pending writes sync
+- server confirms
+- local replaced
+
+---
+
+# Tech Stack
+
+Frontend:
+
+- Next.js 16.2.4
+- React 19.2.4
+- React DOM 19.2.4
 - TypeScript
+
+Authentication:
+
+- NextAuth v5
+
+Database:
+
+- MongoDB Atlas
+
+ODM:
+
+- Mongoose
+
+UI:
+
 - Tailwind v4
 - ShadCN UI
-- localStorage
 
-## Future V2+
+---
 
-- AI learning coach
-- Cloud sync
-- Team mode
-- Marketplace
-- Community features
+# App Architecture
 
-## Success Metrics
+```text id="n5e2cd"
+AutoZen
+├── Next.js App Router
+├── NextAuth v5
+├── MongoDB Atlas
+├── Mongoose Models
+├── Progress APIs
+├── Resource APIs
+├── Notes APIs
+├── Project APIs
+└── localStorage write-ahead cache
+```
+
+---
+
+# API Routes
+
+```text id="o6f3de"
+Authentication
+POST   /api/auth/signup
+POST   /api/auth/login
+
+Progress
+GET    /api/progress
+PATCH  /api/progress
+
+Resources
+GET    /api/resources
+POST   /api/resources
+PATCH  /api/resources/:id
+DELETE /api/resources/:id
+
+Notes
+GET    /api/notes
+POST   /api/notes
+PATCH  /api/notes/:id
+
+Projects
+GET    /api/projects
+POST   /api/projects
+PATCH  /api/projects/:id
+DELETE /api/projects/:id
+```
+
+---
+
+# Success Metrics
 
 Measure:
 
 - Weekly active learners
 - Roadmap completion rate
 - Streak retention
-- Custom resources added
 - Projects completed
 - Month 6 completion rate
 
-## Product Goal
+---
+
+# Product Goal
 
 Help learners go from:
 
@@ -477,4 +687,4 @@ Help learners go from:
 
 to
 
-“I’m following a structured path, finishing projects, building a portfolio, and becoming an AI Automation Builder.”
+“I’m following a structured path, syncing progress across devices, building projects, and becoming an AI Automation Builder.”
