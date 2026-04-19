@@ -1,6 +1,9 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { dbConnect } from "@/lib/db/connect";
+import User from "@/lib/db/models/User";
 
 declare module "next-auth" {
   interface Session {
@@ -19,6 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
+
     Credentials({
       credentials: {
         name: { label: "Name", type: "text" },
@@ -28,14 +32,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // TODO Session 7: validate against MongoDB User model
-        // For now, accept any non-empty credentials and return a mock user
-        return {
-          id: "mock-user-1",
-          name: (credentials.name as string) || "Learner",
-          email: credentials.email as string,
-          image: null,
-        };
+        try {
+          await dbConnect();
+
+          const user = await User.findOne({
+            email: (credentials.email as string).toLowerCase(),
+          }).select("+passwordHash");
+
+          if (!user || !user.passwordHash) return null;
+
+          const valid = await bcrypt.compare(
+            credentials.password as string,
+            user.passwordHash,
+          );
+
+          if (!valid) return null;
+
+          return {
+            id: user._id.toString(),
+            name: user.name ?? "Learner",
+            email: user.email,
+            image: user.image ?? null,
+          };
+        } catch {
+          return null;
+        }
       },
     }),
   ],
@@ -45,6 +66,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 
   callbacks: {
+    async signIn({ user, account }) {
+      // Upsert GitHub users into MongoDB on first OAuth login
+      if (account?.provider === "github" && user.email) {
+        try {
+          await dbConnect();
+          await User.findOneAndUpdate(
+            { email: user.email.toLowerCase() },
+            {
+              $setOnInsert: {
+                name: user.name,
+                image: user.image,
+                githubId: account.providerAccountId,
+                startDate: new Date().toISOString().slice(0, 10),
+              },
+            },
+            { upsert: true, new: true },
+          );
+        } catch {
+          // Non-fatal: user can still sign in even if upsert fails
+        }
+      }
+      return true;
+    },
+
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -52,6 +97,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return token;
     },
+
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;

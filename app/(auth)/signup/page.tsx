@@ -29,7 +29,22 @@ export default function SignupPage() {
 
     setLoading(true);
 
-    // TODO Session 7: POST /api/auth/signup to create user in MongoDB first
+    // Step 1: create user in MongoDB
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error ?? "Could not create account. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    // Step 2: sign in with the new credentials
     const result = await signIn("credentials", {
       name,
       email,
@@ -40,7 +55,8 @@ export default function SignupPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Could not create account. Please try again.");
+      setError("Account created but sign-in failed. Please log in.");
+      router.push("/login");
       return;
     }
 
