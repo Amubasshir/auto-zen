@@ -1,22 +1,67 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { mockUser } from "@/lib/mock-data";
 import { ChevronRight, Play } from "lucide-react";
 
+function useBreadcrumbs() {
+  const pathname = usePathname();
+  const segments = pathname.split("/").filter(Boolean);
+
+  const labels: Record<string, string> = {
+    dashboard: "Dashboard",
+    today: "Today",
+    portfolio: "Portfolio",
+    month: "Month",
+  };
+
+  const crumbs: { label: string; href: string; current: boolean }[] = [
+    { label: "AutoZen", href: "/dashboard", current: false },
+  ];
+
+  let path = "";
+  for (let i = 0; i < segments.length; i++) {
+    path += `/${segments[i]}`;
+    const isLast = i === segments.length - 1;
+    const label = labels[segments[i]] ?? segments[i];
+    if (i === 0) continue; // skip "dashboard" — it's shown via AutoZen root
+    crumbs.push({ label, href: path, current: isLast });
+  }
+
+  // If we're just on /dashboard, mark AutoZen as current
+  if (segments.length === 1 && segments[0] === "dashboard") {
+    crumbs[0].current = true;
+  }
+
+  return crumbs;
+}
+
 export function Header() {
+  const crumbs = useBreadcrumbs();
+
   return (
     <header className="flex items-center gap-4 px-5 border-b border-zen-line bg-zen-bg/80 backdrop-blur-[10px] sticky top-0 z-20">
       {/* Breadcrumbs */}
-      <div className="flex items-center gap-2.5 text-zen-text-3 text-[13px] min-w-0">
-        <span className="text-zen-text-3">AutoZen</span>
-        <ChevronRight size={12} className="text-zen-text-5" />
-        <span className="text-zen-text">Dashboard</span>
+      <div className="flex items-center gap-2.5 text-[13px] min-w-0">
+        {crumbs.map((crumb, i) => (
+          <span key={crumb.href} className="flex items-center gap-2.5">
+            {i > 0 && <ChevronRight size={12} className="text-zen-text-5 shrink-0" />}
+            {crumb.current ? (
+              <span className="text-zen-text">{crumb.label}</span>
+            ) : (
+              <Link href={crumb.href} className="text-zen-text-3 hover:text-zen-text transition-colors">
+                {crumb.label}
+              </Link>
+            )}
+          </span>
+        ))}
       </div>
 
       <div className="flex-1" />
 
       {/* Progress */}
-      <div className="flex items-center gap-3 min-w-[260px]">
+      <div className="flex items-center gap-3 min-w-65">
         <span className="font-mono text-xs text-zen-text-2 tracking-[0.02em]">
           {mockUser.overallProgress}%
         </span>
@@ -41,7 +86,7 @@ export function Header() {
       </button>
 
       {/* Avatar */}
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zen-surface-3 to-zen-surface-2 border border-zen-line grid place-items-center text-xs text-zen-text-2 font-mono">
+      <div className="w-8 h-8 rounded-full bg-linear-to-br from-zen-surface-3 to-zen-surface-2 border border-zen-line grid place-items-center text-xs text-zen-text-2 font-mono shrink-0">
         {mockUser.name.charAt(0)}
       </div>
     </header>

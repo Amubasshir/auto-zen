@@ -48,6 +48,20 @@ export type User = {
   lastActiveItem: string;
 };
 
+export type ProjectStatus = 'planned' | 'in-progress' | 'completed';
+
+export type ProjectPortfolio = {
+  id: string;
+  title: string;
+  description: string;
+  status: ProjectStatus;
+  githubUrl?: string;
+  demoUrl?: string;
+  loomUrl?: string;
+  caseStudy?: string;
+  completedAt?: string;
+};
+
 // --- Constants ---
 
 export const ITEM_TYPES: ResourceType[] = [
@@ -951,5 +965,63 @@ export const mockMonths: Month[] = [
         ],
       },
     ],
+  },
+];
+
+// --- Mock Projects ---
+
+export const mockProjects: ProjectPortfolio[] = [
+  {
+    id: 'proj-1',
+    title: 'Email Auto-Responder',
+    description: 'AI-powered email triage and response system using Gmail API + Claude. Classifies intent, drafts replies, and routes to the right team.',
+    status: 'completed',
+    githubUrl: 'https://github.com/example/email-responder',
+    demoUrl: 'https://demo.example.com/email-responder',
+    loomUrl: 'https://loom.com/share/example1',
+    caseStudy: 'Reduced response time by 70% for a 3-person support team.',
+    completedAt: '2026-04-01',
+  },
+  {
+    id: 'proj-2',
+    title: 'Lead Enrichment Pipeline',
+    description: 'Multi-step Make scenario that pulls new CRM leads, enriches them via Clearbit + LinkedIn, and pushes a scored summary to Notion.',
+    status: 'completed',
+    githubUrl: 'https://github.com/example/lead-pipeline',
+    completedAt: '2026-04-10',
+  },
+  {
+    id: 'proj-3',
+    title: 'Social Media Scheduler',
+    description: 'Zapier + OpenAI workflow that repurposes long-form content into platform-specific posts and schedules them across Twitter, LinkedIn, and Instagram.',
+    status: 'in-progress',
+    githubUrl: 'https://github.com/example/social-scheduler',
+  },
+  {
+    id: 'proj-4',
+    title: 'API Integration Hub',
+    description: 'Centralized webhook router built on n8n. Receives events from Stripe, GitHub, and Intercom and fans out to the correct downstream services.',
+    status: 'in-progress',
+    githubUrl: 'https://github.com/example/api-hub',
+    demoUrl: 'https://demo.example.com/api-hub',
+  },
+  {
+    id: 'proj-5',
+    title: 'Onboarding Automation',
+    description: 'End-to-end client onboarding flow: contract signed → Notion workspace created → welcome email sent → Slack channel provisioned. Zero manual steps.',
+    status: 'planned',
+  },
+  {
+    id: 'proj-6',
+    title: 'AI Content Moderator',
+    description: 'Serverless function that screens user-submitted content with a Claude classifier before it hits the database. Flags, quarantines, or auto-approves.',
+    status: 'planned',
+    githubUrl: 'https://github.com/example/content-mod',
+  },
+  {
+    id: 'proj-7',
+    title: 'Invoice Processing Bot',
+    description: 'Reads PDF invoices from Gmail attachments, extracts line items with GPT-4 Vision, and reconciles against QuickBooks records automatically.',
+    status: 'planned',
   },
 ];
