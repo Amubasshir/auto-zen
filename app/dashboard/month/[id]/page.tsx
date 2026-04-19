@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { mockMonths } from "@/lib/mock-data";
 import { fetchProgress } from "@/actions/progress";
 import { fetchResourcesForWeeks } from "@/actions/resources";
+import { fetchNotesForWeeks } from "@/actions/notes";
 import { MonthPageClient } from "@/components/month/MonthPageClient";
 
 type Props = {
@@ -16,9 +17,10 @@ export default async function MonthPage({ params }: Props) {
 
   const weekIds = month.weeks.map((w) => w.id);
 
-  const [progress, resources] = await Promise.all([
+  const [progress, resources, notes] = await Promise.all([
     fetchProgress(),
     fetchResourcesForWeeks(weekIds),
+    fetchNotesForWeeks(weekIds),
   ]);
 
   const weekOffset = (month.monthNumber - 1) * 4;
@@ -29,6 +31,7 @@ export default async function MonthPage({ params }: Props) {
       weekOffset={weekOffset}
       initialProgress={progress}
       initialResources={resources}
+      initialNotes={notes}
     />
   );
 }

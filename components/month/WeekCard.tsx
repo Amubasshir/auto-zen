@@ -16,6 +16,7 @@ type Props = {
   defaultOpen?: boolean;
   progress: ProgressState;
   resources: ClientResource[];
+  initialNoteContent?: string;
   onItemClick?: (item: Item) => void;
   onItemToggle?: (itemId: string, completed: boolean) => void;
   onResourcesChange?: (weekId: string, resources: ClientResource[]) => void;
@@ -44,6 +45,7 @@ export function WeekCard({
   defaultOpen = false,
   progress,
   resources,
+  initialNoteContent = "",
   onItemClick,
   onItemToggle,
   onResourcesChange,
@@ -100,7 +102,7 @@ export function WeekCard({
           <span className="w-8 h-8 rounded-[8px] grid place-items-center bg-zen-surface-2 border border-zen-line font-mono text-[12px] text-zen-text-2">
             W{weekIndex}
           </span>
-          <div className="flex flex-col gap-[3px] min-w-0">
+          <div className="flex flex-col gap-0.75 min-w-0">
             <b className="font-medium text-zen-text text-[15px] truncate">{week.title}</b>
             <span className="text-zen-text-4 text-xs font-mono">
               {week.items.length} items
@@ -179,7 +181,7 @@ export function WeekCard({
             {/* Inline notes panel */}
             {showNotes && (
               <div className="px-5 py-4 border-t border-zen-line">
-                <NotesPanel weekId={week.id} />
+                <NotesPanel weekId={week.id} initialContent={initialNoteContent} />
               </div>
             )}
           </div>

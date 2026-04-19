@@ -16,6 +16,7 @@ type Props = {
   weekOffset: number;
   initialProgress: ProgressState;
   initialResources: ClientResource[];
+  initialNotes: Record<string, string>;
 };
 
 const CACHE_KEY = "az-cache-progress";
@@ -47,6 +48,7 @@ export function MonthPageClient({
   weekOffset,
   initialProgress,
   initialResources,
+  initialNotes,
 }: Props) {
   const [progress, setProgress] = useState<ProgressState>(initialProgress);
   const [resourcesByWeek, setResourcesByWeek] = useState<Record<string, ClientResource[]>>(
@@ -106,6 +108,7 @@ export function MonthPageClient({
             defaultOpen={i === 0}
             progress={progress}
             resources={resourcesByWeek[week.id] ?? []}
+            initialNoteContent={initialNotes[week.id] ?? ""}
             onItemClick={(item) => setSelected({ item, week, month })}
             onItemToggle={handleItemToggle}
             onResourcesChange={handleResourcesChange}

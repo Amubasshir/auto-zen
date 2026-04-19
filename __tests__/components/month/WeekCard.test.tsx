@@ -8,6 +8,12 @@ jest.mock("@/actions/resources", () => ({
   fetchResourcesForWeeks: jest.fn().mockResolvedValue([]),
 }));
 
+// WeekCard → NotesPanel → actions/notes → auth.ts → next-auth (ESM)
+jest.mock("@/actions/notes", () => ({
+  saveNote: jest.fn().mockResolvedValue({ success: true }),
+  fetchNotesForWeeks: jest.fn().mockResolvedValue({}),
+}));
+
 import { WeekCard } from "@/components/month/WeekCard";
 import type { Week } from "@/lib/mock-data";
 import { EMPTY_PROGRESS } from "@/lib/validators/progress";
