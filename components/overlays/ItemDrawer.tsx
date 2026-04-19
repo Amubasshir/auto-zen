@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { ExternalLink, Play } from "lucide-react";
 import { Drawer } from "./Drawer";
 import { NotesPanel } from "./NotesPanel";
@@ -12,6 +11,10 @@ type Props = {
   item: Item | null;
   week: Week | null;
   month: Month | null;
+  /** Task completion state from real progress (taskId → boolean) */
+  completedTasks?: Record<string, boolean>;
+  /** Called when a task checkbox is toggled */
+  onTaskToggle?: (itemId: string, taskId: string, completed: boolean) => void;
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -30,26 +33,24 @@ const TYPE_COLOR: Record<string, string> = {
   github: "text-zen-text-2 border-zen-line",
 };
 
-export function ItemDrawer({ open, onClose, item, week, month }: Props) {
-  // Local task state (persisted to DB in Session 8)
-  const [tasksDone, setTasksDone] = useState<Record<string, boolean>>({});
-
-  function toggleTask(taskId: string, initial: boolean) {
-    setTasksDone((prev) => ({
-      ...prev,
-      [taskId]: taskId in prev ? !prev[taskId] : !initial,
-    }));
-  }
-
-  function isTaskDone(taskId: string, initial: boolean) {
-    return taskId in tasksDone ? tasksDone[taskId] : initial;
-  }
-
+export function ItemDrawer({
+  open,
+  onClose,
+  item,
+  week,
+  month,
+  completedTasks = {},
+  onTaskToggle,
+}: Props) {
   if (!item || !week || !month) return null;
+
+  function isTaskDone(task: { id: string; completed: boolean }) {
+    return task.id in completedTasks ? completedTasks[task.id] : task.completed;
+  }
 
   const typeLabel = TYPE_LABEL[item.type] ?? item.type;
   const typeColor = TYPE_COLOR[item.type] ?? "text-zen-text-2 border-zen-line";
-  const doneTasks = item.tasks.filter((t) => isTaskDone(t.id, t.completed)).length;
+  const doneTasks = item.tasks.filter(isTaskDone).length;
   const totalTasks = item.tasks.length;
   const allDone = doneTasks === totalTasks && totalTasks > 0;
 
@@ -63,9 +64,7 @@ export function ItemDrawer({ open, onClose, item, week, month }: Props) {
           <span className="text-zen-text-5">·</span>
           <span>Week {week.weekNumber}</span>
           <span className="text-zen-text-5">·</span>
-          <span
-            className={`px-1.5 py-0.5 rounded-full border font-mono text-[10px] ${typeColor}`}
-          >
+          <span className={`px-1.5 py-0.5 rounded-full border font-mono text-[10px] ${typeColor}`}>
             {typeLabel}
           </span>
         </>
@@ -86,9 +85,7 @@ export function ItemDrawer({ open, onClose, item, week, month }: Props) {
           )}
           <button
             className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border text-[13px] transition
-              ${allDone
-                ? "border-jade/40 text-jade bg-jade/7"
-                : "border-zen-line text-zen-text-2 hover:bg-zen-surface"}`}
+              ${allDone ? "border-jade/40 text-jade bg-jade/7" : "border-zen-line text-zen-text-2 hover:bg-zen-surface"}`}
           >
             {allDone ? "✓ Completed" : "Mark Complete"}
           </button>
@@ -115,19 +112,16 @@ export function ItemDrawer({ open, onClose, item, week, month }: Props) {
       </div>
 
       {/* Tasks */}
-      <p className="m-0 mb-2.5 text-[11px] tracking-[0.14em] uppercase text-zen-text-5">
-        Tasks
-      </p>
+      <p className="m-0 mb-2.5 text-[11px] tracking-[0.14em] uppercase text-zen-text-5">Tasks</p>
       <div className="flex flex-col mb-6">
         {item.tasks.map((task) => {
-          const done = isTaskDone(task.id, task.completed);
+          const done = isTaskDone(task);
           return (
             <button
               key={task.id}
-              onClick={() => toggleTask(task.id, task.completed)}
+              onClick={() => onTaskToggle?.(item.id, task.id, !done)}
               className="grid grid-cols-[22px_1fr] gap-3 items-start py-3 border-b border-dashed border-zen-line last:border-b-0 text-left group"
             >
-              {/* Checkbox */}
               <span
                 className={`w-[18px] h-[18px] mt-0.5 rounded-[5px] border-[1.5px] relative shrink-0 transition-all duration-150
                   ${done ? "bg-jade border-jade" : "border-zen-line-strong group-hover:border-jade/60"}`}
@@ -136,10 +130,7 @@ export function ItemDrawer({ open, onClose, item, week, month }: Props) {
                   <span className="absolute left-[4px] top-[1px] w-[4px] h-[9px] border-solid border-jade-ink border-0 border-r-2 border-b-2 rotate-45 block" />
                 )}
               </span>
-              {/* Label */}
-              <span
-                className={`text-sm leading-snug transition-colors ${done ? "text-zen-text-4 line-through decoration-zen-text-5" : "text-zen-text"}`}
-              >
+              <span className={`text-sm leading-snug transition-colors ${done ? "text-zen-text-4 line-through decoration-zen-text-5" : "text-zen-text"}`}>
                 {task.label}
               </span>
             </button>
@@ -148,25 +139,15 @@ export function ItemDrawer({ open, onClose, item, week, month }: Props) {
       </div>
 
       {/* Notes */}
-      <p className="m-0 mb-2.5 text-[11px] tracking-[0.14em] uppercase text-zen-text-5">
-        Week Notes
-      </p>
+      <p className="m-0 mb-2.5 text-[11px] tracking-[0.14em] uppercase text-zen-text-5">Week Notes</p>
       <NotesPanel weekId={week.id} />
     </Drawer>
   );
 }
 
-function Chip({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+function Chip({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <span
-      className={`inline-flex items-center px-2.5 py-1 border border-zen-line rounded-full font-mono text-[11px] text-zen-text-3 ${className}`}
-    >
+    <span className={`inline-flex items-center px-2.5 py-1 border border-zen-line rounded-full font-mono text-[11px] text-zen-text-3 ${className}`}>
       {children}
     </span>
   );

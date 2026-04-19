@@ -5,23 +5,51 @@ import { ChevronRight, StickyNote, Plus } from "lucide-react";
 import { ItemRow } from "./ItemRow";
 import { NotesPanel } from "@/components/overlays/NotesPanel";
 import { ResourceForm } from "@/components/overlays/ResourceForm";
-import type { Item, Week } from "@/lib/mock-data";
+import type { Week, Item } from "@/lib/mock-data";
+import type { ProgressState } from "@/lib/validators/progress";
 
 type Props = {
   week: Week;
   weekIndex: number;
   defaultOpen?: boolean;
+  progress: ProgressState;
   onItemClick?: (item: Item) => void;
+  onItemToggle?: (itemId: string, completed: boolean) => void;
 };
 
-export function WeekCard({ week, weekIndex, defaultOpen = false, onItemClick }: Props) {
+function resolveItemDone(itemId: string, itemCompleted: boolean, progress: ProgressState) {
+  return itemId in progress.completedItems
+    ? progress.completedItems[itemId]
+    : itemCompleted;
+}
+
+function resolveTaskDoneCount(
+  itemId: string,
+  tasks: { id: string; completed: boolean }[],
+  progress: ProgressState,
+) {
+  return tasks.filter((t) => {
+    const taskMap = progress.completedTasks[itemId];
+    return taskMap && t.id in taskMap ? taskMap[t.id] : t.completed;
+  }).length;
+}
+
+export function WeekCard({
+  week,
+  weekIndex,
+  defaultOpen = false,
+  progress,
+  onItemClick,
+  onItemToggle,
+}: Props) {
   const [open, setOpen] = useState(defaultOpen);
   const [showNotes, setShowNotes] = useState(false);
   const [showResourceForm, setShowResourceForm] = useState(false);
 
+  // Compute progress from real state
   const totalTasks = week.items.reduce((s, item) => s + item.tasks.length, 0);
   const doneTasks = week.items.reduce(
-    (s, item) => s + item.tasks.filter((t) => t.completed).length,
+    (s, item) => s + resolveTaskDoneCount(item.id, item.tasks, progress),
     0,
   );
   const pct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
@@ -70,17 +98,12 @@ export function WeekCard({ week, weekIndex, defaultOpen = false, onItemClick }: 
         {/* Week body */}
         {open && (
           <div className="border-t border-zen-line bg-zen-raised">
-            {/* Toolbar */}
             <div className="flex items-center gap-2.5 px-5 py-2.5 border-b border-dashed border-zen-line text-[12px] text-zen-text-3">
-              <span className="flex-1 truncate">
-                Week {weekIndex} — {week.title}
-              </span>
+              <span className="flex-1 truncate">Week {weekIndex} — {week.title}</span>
               <button
                 onClick={() => setShowNotes((v) => !v)}
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[7px] border text-[11px] transition-colors duration-150
-                  ${showNotes
-                    ? "border-jade-line text-jade bg-jade/7"
-                    : "border-zen-line hover:bg-zen-surface hover:text-zen-text"}`}
+                  ${showNotes ? "border-jade-line text-jade bg-jade/7" : "border-zen-line hover:bg-zen-surface hover:text-zen-text"}`}
               >
                 <StickyNote size={12} />
                 Notes
@@ -94,18 +117,19 @@ export function WeekCard({ week, weekIndex, defaultOpen = false, onItemClick }: 
               </button>
             </div>
 
-            {/* Item rows */}
             <div className="flex flex-col">
               {week.items.map((item) => (
                 <ItemRow
                   key={item.id}
                   item={item}
+                  isDone={resolveItemDone(item.id, item.completed, progress)}
+                  doneTasks={resolveTaskDoneCount(item.id, item.tasks, progress)}
                   onClick={() => onItemClick?.(item)}
+                  onToggle={(completed) => onItemToggle?.(item.id, completed)}
                 />
               ))}
             </div>
 
-            {/* Inline notes panel */}
             {showNotes && (
               <div className="px-5 py-4 border-t border-zen-line">
                 <NotesPanel weekId={week.id} />
@@ -115,7 +139,6 @@ export function WeekCard({ week, weekIndex, defaultOpen = false, onItemClick }: 
         )}
       </div>
 
-      {/* Resource form drawer — rendered outside the card to avoid z-index stacking */}
       <ResourceForm
         open={showResourceForm}
         weekTitle={week.title}

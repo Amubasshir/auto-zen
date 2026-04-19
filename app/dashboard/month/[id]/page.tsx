@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { mockMonths } from "@/lib/mock-data";
+import { fetchProgress } from "@/actions/progress";
 import { MonthPageClient } from "@/components/month/MonthPageClient";
 
 type Props = {
@@ -12,25 +13,16 @@ export default async function MonthPage({ params }: Props) {
 
   if (!month) notFound();
 
-  let doneTasks = 0;
-  let totalTasks = 0;
-  for (const week of month.weeks) {
-    for (const item of week.items) {
-      for (const task of item.tasks) {
-        totalTasks++;
-        if (task.completed) doneTasks++;
-      }
-    }
-  }
+  // Fetch real progress — falls back to EMPTY_PROGRESS if unauthenticated or DB error
+  const progress = await fetchProgress();
 
   const weekOffset = (month.monthNumber - 1) * 4;
 
   return (
     <MonthPageClient
       month={month}
-      doneTasks={doneTasks}
-      totalTasks={totalTasks}
       weekOffset={weekOffset}
+      initialProgress={progress}
     />
   );
 }

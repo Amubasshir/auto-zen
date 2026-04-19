@@ -35,9 +35,14 @@ describe("ItemRow", () => {
     });
   });
 
-  it("shows task count as done/total", () => {
+  it("falls back to item.tasks for task count when doneTasks not provided", () => {
     render(<ItemRow item={makeItem()} />);
     expect(screen.getByText("1/2 tasks")).toBeInTheDocument();
+  });
+
+  it("uses explicit doneTasks prop when provided", () => {
+    render(<ItemRow item={makeItem()} doneTasks={2} />);
+    expect(screen.getByText("2/2 tasks")).toBeInTheDocument();
   });
 
   it("shows estimated duration (2 tasks × 15 min = 30m)", () => {
@@ -45,27 +50,59 @@ describe("ItemRow", () => {
     expect(screen.getByText("30m")).toBeInTheDocument();
   });
 
-  it("applies strikethrough styling when completed", () => {
+  it("falls back to item.completed when isDone not provided", () => {
     render(<ItemRow item={makeItem({ completed: true })} />);
-    const title = screen.getByText("Understanding APIs");
-    expect(title).toHaveClass("line-through");
+    expect(screen.getByText("Understanding APIs")).toHaveClass("line-through");
   });
 
-  it("calls onClick when row is clicked", () => {
+  it("uses isDone prop over item.completed", () => {
+    // item.completed = false, but isDone = true
+    render(<ItemRow item={makeItem({ completed: false })} isDone={true} />);
+    expect(screen.getByText("Understanding APIs")).toHaveClass("line-through");
+  });
+
+  it("isDone=false overrides item.completed=true", () => {
+    render(<ItemRow item={makeItem({ completed: true })} isDone={false} />);
+    expect(screen.getByText("Understanding APIs")).not.toHaveClass("line-through");
+  });
+
+  it("calls onClick when row body is clicked", () => {
     const onClick = jest.fn();
     render(<ItemRow item={makeItem()} onClick={onClick} />);
     fireEvent.click(screen.getByText("Understanding APIs"));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
-  it("duration shows hours for large task counts", () => {
+  it("calls onToggle with !isDone when checkbox is clicked", () => {
+    const onToggle = jest.fn();
+    render(<ItemRow item={makeItem()} isDone={false} onToggle={onToggle} />);
+    fireEvent.click(screen.getByLabelText(/mark complete/i));
+    expect(onToggle).toHaveBeenCalledWith(true);
+  });
+
+  it("calls onToggle with false when done checkbox is clicked", () => {
+    const onToggle = jest.fn();
+    render(<ItemRow item={makeItem()} isDone={true} onToggle={onToggle} />);
+    fireEvent.click(screen.getByLabelText(/mark incomplete/i));
+    expect(onToggle).toHaveBeenCalledWith(false);
+  });
+
+  it("checkbox click does NOT trigger onClick (row handler)", () => {
+    const onClick = jest.fn();
+    const onToggle = jest.fn();
+    render(<ItemRow item={makeItem()} onClick={onClick} onToggle={onToggle} />);
+    fireEvent.click(screen.getByLabelText(/mark complete/i));
+    expect(onToggle).toHaveBeenCalledTimes(1);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("shows hours for large task counts (5 tasks × 15 = 75min → 1h)", () => {
     const manyTasks = Array.from({ length: 5 }, (_, i) => ({
       id: `t${i}`,
       label: `Task ${i}`,
       completed: false,
     }));
     render(<ItemRow item={makeItem({ tasks: manyTasks })} />);
-    // 5 tasks × 15 min = 75 min → ~1h
     expect(screen.getByText("1h")).toBeInTheDocument();
   });
 });
