@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { mockMonths } from "@/lib/mock-data";
 import { fetchProgress } from "@/actions/progress";
+import { fetchResourcesForWeeks } from "@/actions/resources";
 import { MonthPageClient } from "@/components/month/MonthPageClient";
 
 type Props = {
@@ -13,8 +14,12 @@ export default async function MonthPage({ params }: Props) {
 
   if (!month) notFound();
 
-  // Fetch real progress — falls back to EMPTY_PROGRESS if unauthenticated or DB error
-  const progress = await fetchProgress();
+  const weekIds = month.weeks.map((w) => w.id);
+
+  const [progress, resources] = await Promise.all([
+    fetchProgress(),
+    fetchResourcesForWeeks(weekIds),
+  ]);
 
   const weekOffset = (month.monthNumber - 1) * 4;
 
@@ -23,6 +28,7 @@ export default async function MonthPage({ params }: Props) {
       month={month}
       weekOffset={weekOffset}
       initialProgress={progress}
+      initialResources={resources}
     />
   );
 }

@@ -7,6 +7,7 @@ import { ItemDrawer } from "@/components/overlays/ItemDrawer";
 import { toggleItem, toggleTask } from "@/actions/progress";
 import type { Month, Week, Item } from "@/lib/mock-data";
 import type { ProgressState } from "@/lib/validators/progress";
+import type { ClientResource } from "@/lib/validators/resource";
 
 type SelectedItem = { item: Item; week: Week; month: Month };
 
@@ -14,6 +15,7 @@ type Props = {
   month: Month;
   weekOffset: number;
   initialProgress: ProgressState;
+  initialResources: ClientResource[];
 };
 
 const CACHE_KEY = "az-cache-progress";
@@ -21,7 +23,7 @@ const CACHE_KEY = "az-cache-progress";
 function writeCache(progress: ProgressState) {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(progress));
-  } catch { /* storage unavailable in SSR or private mode */ }
+  } catch { /* unavailable */ }
 }
 
 function countDoneTasksInMonth(month: Month, progress: ProgressState) {
@@ -40,21 +42,28 @@ function countDoneTasksInMonth(month: Month, progress: ProgressState) {
   return { done, total };
 }
 
-export function MonthPageClient({ month, weekOffset, initialProgress }: Props) {
+export function MonthPageClient({
+  month,
+  weekOffset,
+  initialProgress,
+  initialResources,
+}: Props) {
   const [progress, setProgress] = useState<ProgressState>(initialProgress);
+  const [resourcesByWeek, setResourcesByWeek] = useState<Record<string, ClientResource[]>>(
+    () => {
+      const map: Record<string, ClientResource[]> = {};
+      for (const week of month.weeks) map[week.id] = [];
+      for (const r of initialResources) {
+        if (!map[r.weekId]) map[r.weekId] = [];
+        map[r.weekId].push(r);
+      }
+      return map;
+    },
+  );
   const [selected, setSelected] = useState<SelectedItem | null>(null);
   const [, startTransition] = useTransition();
 
-  function openItem(item: Item, week: Week) {
-    setSelected({ item, week, month });
-  }
-
-  function closeDrawer() {
-    setSelected(null);
-  }
-
   function handleItemToggle(itemId: string, completed: boolean) {
-    // Optimistic update
     const next: ProgressState = {
       ...progress,
       completedItems: { ...progress.completedItems, [itemId]: completed },
@@ -62,11 +71,7 @@ export function MonthPageClient({ month, weekOffset, initialProgress }: Props) {
     };
     setProgress(next);
     writeCache(next);
-
-    // Persist via Server Action (non-blocking)
-    startTransition(async () => {
-      await toggleItem(itemId, completed);
-    });
+    startTransition(async () => { await toggleItem(itemId, completed); });
   }
 
   function handleTaskToggle(itemId: string, taskId: string, completed: boolean) {
@@ -74,18 +79,16 @@ export function MonthPageClient({ month, weekOffset, initialProgress }: Props) {
       ...progress,
       completedTasks: {
         ...progress.completedTasks,
-        [itemId]: {
-          ...(progress.completedTasks[itemId] ?? {}),
-          [taskId]: completed,
-        },
+        [itemId]: { ...(progress.completedTasks[itemId] ?? {}), [taskId]: completed },
       },
     };
     setProgress(next);
     writeCache(next);
+    startTransition(async () => { await toggleTask(itemId, taskId, completed); });
+  }
 
-    startTransition(async () => {
-      await toggleTask(itemId, taskId, completed);
-    });
+  function handleResourcesChange(weekId: string, updated: ClientResource[]) {
+    setResourcesByWeek((prev) => ({ ...prev, [weekId]: updated }));
   }
 
   const { done: doneTasks, total: totalTasks } = countDoneTasksInMonth(month, progress);
@@ -102,21 +105,21 @@ export function MonthPageClient({ month, weekOffset, initialProgress }: Props) {
             weekIndex={weekOffset + i + 1}
             defaultOpen={i === 0}
             progress={progress}
-            onItemClick={(item) => openItem(item, week)}
+            resources={resourcesByWeek[week.id] ?? []}
+            onItemClick={(item) => setSelected({ item, week, month })}
             onItemToggle={handleItemToggle}
+            onResourcesChange={handleResourcesChange}
           />
         ))}
       </div>
 
       <ItemDrawer
         open={selected !== null}
-        onClose={closeDrawer}
+        onClose={() => setSelected(null)}
         item={selected?.item ?? null}
         week={selected?.week ?? null}
         month={selected?.month ?? null}
-        completedTasks={
-          selected ? (progress.completedTasks[selected.item.id] ?? {}) : {}
-        }
+        completedTasks={selected ? (progress.completedTasks[selected.item.id] ?? {}) : {}}
         onTaskToggle={handleTaskToggle}
       />
     </>

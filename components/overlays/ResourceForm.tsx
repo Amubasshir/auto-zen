@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Drawer } from "./Drawer";
+import { createResource, updateResource } from "@/actions/resources";
+import type { ClientResource } from "@/lib/validators/resource";
 
 type ResourceType = "youtube" | "docs" | "course" | "article" | "github";
 type Difficulty = "beginner" | "intermediate" | "advanced";
@@ -23,67 +25,127 @@ const DIFFICULTIES: { value: Difficulty; label: string }[] = [
 
 type Props = {
   open: boolean;
+  weekId: string;
   weekTitle: string;
+  /** When provided, form opens in edit mode */
+  editing?: ClientResource | null;
   onClose: () => void;
+  onSaved?: (resource: ClientResource) => void;
 };
 
-export function ResourceForm({ open, weekTitle, onClose }: Props) {
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-  const [type, setType] = useState<ResourceType>("youtube");
-  const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
-  const [duration, setDuration] = useState("");
-  const [subtasks, setSubtasks] = useState<string[]>([""]);
+export function ResourceForm({
+  open,
+  weekId,
+  weekTitle,
+  editing,
+  onClose,
+  onSaved,
+}: Props) {
+  const isEdit = !!editing;
+  const [, startTransition] = useTransition();
 
-  function addSubtask() {
-    setSubtasks((prev) => [...prev, ""]);
+  const [title, setTitle] = useState(editing?.title ?? "");
+  const [url, setUrl] = useState(editing?.url ?? "");
+  const [type, setType] = useState<ResourceType>((editing?.type as ResourceType) ?? "youtube");
+  const [difficulty, setDifficulty] = useState<Difficulty>((editing?.difficulty as Difficulty) ?? "beginner");
+  const [duration, setDuration] = useState(editing?.duration ?? "");
+  const [subtasks, setSubtasks] = useState<string[]>(editing?.tasks?.length ? editing.tasks : [""]);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  // Reset form when editing target changes
+  function resetForm() {
+    setTitle(editing?.title ?? "");
+    setUrl(editing?.url ?? "");
+    setType((editing?.type as ResourceType) ?? "youtube");
+    setDifficulty((editing?.difficulty as Difficulty) ?? "beginner");
+    setDuration(editing?.duration ?? "");
+    setSubtasks(editing?.tasks?.length ? editing.tasks : [""]);
+    setError("");
   }
 
-  function removeSubtask(i: number) {
-    setSubtasks((prev) => prev.filter((_, idx) => idx !== i));
-  }
-
-  function updateSubtask(i: number, value: string) {
-    setSubtasks((prev) => prev.map((s, idx) => (idx === i ? value : s)));
+  function handleClose() {
+    resetForm();
+    onClose();
   }
 
   function handleSave() {
-    // Session 9 will wire this to the real API
-    onClose();
-    setTitle("");
-    setUrl("");
-    setType("youtube");
-    setDifficulty("beginner");
-    setDuration("");
-    setSubtasks([""]);
+    if (!title.trim()) { setError("Title is required."); return; }
+    if (!url.trim()) { setError("URL is required."); return; }
+
+    setError("");
+    setSaving(true);
+
+    const filledTasks = subtasks.filter((t) => t.trim().length > 0);
+
+    startTransition(async () => {
+      let result;
+      if (isEdit && editing) {
+        result = await updateResource(editing.id, {
+          title: title.trim(),
+          url: url.trim(),
+          type,
+          difficulty,
+          duration,
+          tasks: filledTasks,
+        });
+        if (result.success) {
+          onSaved?.({ ...editing, title, url, type, difficulty, duration, tasks: filledTasks });
+        }
+      } else {
+        result = await createResource({
+          weekId,
+          title: title.trim(),
+          url: url.trim(),
+          type,
+          difficulty,
+          duration,
+          tasks: filledTasks,
+        });
+        if (result.success && result.resource) {
+          onSaved?.(result.resource);
+        }
+      }
+
+      setSaving(false);
+      if (result?.success) {
+        handleClose();
+      } else {
+        setError(result?.error ?? "Something went wrong.");
+      }
+    });
   }
+
+  function addSubtask() { setSubtasks((p) => [...p, ""]); }
+  function removeSubtask(i: number) { setSubtasks((p) => p.filter((_, idx) => idx !== i)); }
+  function updateSubtask(i: number, val: string) { setSubtasks((p) => p.map((s, idx) => idx === i ? val : s)); }
 
   return (
     <Drawer
       open={open}
-      onClose={onClose}
-      kicker={<>Add Resource · {weekTitle}</>}
-      title="New Resource"
+      onClose={handleClose}
+      kicker={<>{isEdit ? "Edit Resource" : "Add Resource"} · {weekTitle}</>}
+      title={isEdit ? "Edit Resource" : "New Resource"}
       footer={
         <>
           <button
             onClick={handleSave}
-            disabled={!title.trim()}
+            disabled={saving || !title.trim()}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-jade text-jade-ink text-[13px] font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition"
           >
-            Save Resource
+            {saving ? "Saving…" : isEdit ? "Save Changes" : "Add Resource"}
           </button>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2.5 rounded-[10px] border border-zen-line text-zen-text-2 text-[13px] hover:bg-zen-surface transition"
           >
             Cancel
           </button>
+          {error && <p className="ml-2 text-danger font-mono text-[12px]">{error}</p>}
         </>
       }
     >
       <div className="flex flex-col gap-3.5">
-        {/* Title */}
         <Field label="Title">
           <input
             type="text"
@@ -94,7 +156,6 @@ export function ResourceForm({ open, weekTitle, onClose }: Props) {
           />
         </Field>
 
-        {/* URL */}
         <Field label="URL">
           <input
             type="url"
@@ -105,21 +166,12 @@ export function ResourceForm({ open, weekTitle, onClose }: Props) {
           />
         </Field>
 
-        {/* Type + Difficulty + Duration row */}
         <div className="grid grid-cols-3 gap-2.5">
           <Field label="Type">
-            <SegControl
-              options={TYPES}
-              value={type}
-              onChange={(v) => setType(v as ResourceType)}
-            />
+            <SegControl options={TYPES} value={type} onChange={(v) => setType(v as ResourceType)} />
           </Field>
           <Field label="Difficulty">
-            <SegControl
-              options={DIFFICULTIES}
-              value={difficulty}
-              onChange={(v) => setDifficulty(v as Difficulty)}
-            />
+            <SegControl options={DIFFICULTIES} value={difficulty} onChange={(v) => setDifficulty(v as Difficulty)} />
           </Field>
           <Field label="Duration">
             <input
@@ -132,12 +184,11 @@ export function ResourceForm({ open, weekTitle, onClose }: Props) {
           </Field>
         </div>
 
-        {/* Subtasks */}
         <Field label="Subtasks">
           <div className="flex flex-col gap-2">
             {subtasks.map((task, i) => (
               <div key={i} className="grid grid-cols-[18px_1fr_22px] gap-2.5 items-center">
-                <span className="w-4 h-4 rounded-[4px] border-[1.5px] border-dashed border-zen-line-strong shrink-0" />
+                <span className="w-4 h-4 rounded-lg border-[1.5px] border-dashed border-zen-line-strong shrink-0" />
                 <input
                   type="text"
                   value={task}
@@ -148,8 +199,8 @@ export function ResourceForm({ open, weekTitle, onClose }: Props) {
                 {subtasks.length > 1 && (
                   <button
                     onClick={() => removeSubtask(i)}
-                    className="w-5.5 h-5.5 grid place-items-center text-zen-text-5 hover:text-danger transition-colors"
                     aria-label="Remove subtask"
+                    className="w-5 h-5 grid place-items-center text-zen-text-5 hover:text-danger transition-colors"
                   >
                     <Trash2 size={13} />
                   </button>
@@ -191,7 +242,7 @@ function SegControl<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-1 p-[3px] bg-zen-surface-2 rounded-[8px] border border-zen-line">
+    <div className="flex flex-wrap gap-1 p-0.75 bg-zen-surface-2 rounded-[8px] border border-zen-line">
       {options.map((opt) => (
         <button
           key={opt.value}
