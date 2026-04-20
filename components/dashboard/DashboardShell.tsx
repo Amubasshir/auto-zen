@@ -50,7 +50,7 @@ export function DashboardShell({ children, streakCount, activeDays, overallProgr
         )}
       >
         {/* Desktop sidebar — not in grid flow on mobile */}
-        <div className="hidden md:block">
+        <div className="hidden md:block h-full">
           <Sidebar
             expanded={sidebarExpanded}
             onToggle={() => setSidebarExpanded((e) => !e)}

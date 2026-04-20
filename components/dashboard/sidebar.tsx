@@ -52,7 +52,7 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="border-r border-zen-line bg-zen-raised flex flex-col min-w-0 relative overflow-hidden">
+    <aside className="h-full border-r border-zen-line bg-zen-raised flex flex-col min-w-0 relative overflow-hidden">
       {/* Brand */}
       <div className="h-16 flex items-center gap-2.5 px-4 border-b border-zen-line text-zen-text shrink-0">
         <div className="w-7 h-7 shrink-0 grid place-items-center">
