@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { ChevronRight, Play, LogOut } from "lucide-react";
+import { ChevronRight, Play, LogOut, Menu } from "lucide-react";
 
 function useBreadcrumbs() {
   const pathname = usePathname();
@@ -39,9 +39,10 @@ function useBreadcrumbs() {
 type HeaderProps = {
   streakCount: number;
   overallProgress: number;
+  onMobileMenuToggle?: () => void;
 };
 
-export function Header({ streakCount, overallProgress }: HeaderProps) {
+export function Header({ streakCount, overallProgress, onMobileMenuToggle }: HeaderProps) {
   const crumbs = useBreadcrumbs();
   const { data: session } = useSession();
 
@@ -49,7 +50,18 @@ export function Header({ streakCount, overallProgress }: HeaderProps) {
   const userInitial = userName.charAt(0).toUpperCase();
 
   return (
-    <header className="flex items-center gap-4 px-5 border-b border-zen-line bg-zen-bg/80 backdrop-blur-[10px] sticky top-0 z-20">
+    <header className="flex items-center gap-3 md:gap-4 px-4 md:px-5 border-b border-zen-line bg-zen-bg/80 backdrop-blur-[10px] sticky top-0 z-20">
+      {/* Mobile hamburger */}
+      {onMobileMenuToggle && (
+        <button
+          onClick={onMobileMenuToggle}
+          aria-label="Open menu"
+          className="md:hidden w-8 h-8 rounded-[8px] grid place-items-center text-zen-text-3 hover:bg-zen-surface hover:text-zen-text transition-colors shrink-0"
+        >
+          <Menu size={18} />
+        </button>
+      )}
+
       {/* Breadcrumbs */}
       <div className="flex items-center gap-2.5 text-[13px] min-w-0">
         {crumbs.map((crumb, i) => (
@@ -71,8 +83,8 @@ export function Header({ streakCount, overallProgress }: HeaderProps) {
 
       <div className="flex-1" />
 
-      {/* Global progress */}
-      <div className="flex items-center gap-3 min-w-65">
+      {/* Global progress — hidden on mobile */}
+      <div className="hidden md:flex items-center gap-3 min-w-65">
         <span className="font-mono text-xs text-zen-text-2 tracking-[0.02em]">
           {overallProgress}%
         </span>
@@ -90,8 +102,8 @@ export function Header({ streakCount, overallProgress }: HeaderProps) {
         {streakCount}d
       </span>
 
-      {/* Resume button */}
-      <button className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[10px] bg-jade text-jade-ink text-[13px] font-medium border-none hover:brightness-110 transition">
+      {/* Resume button — hidden on mobile */}
+      <button className="hidden md:inline-flex items-center gap-2 px-3.5 py-2 rounded-[10px] bg-jade text-jade-ink text-[13px] font-medium border-none hover:brightness-110 transition">
         <Play size={14} />
         Resume
       </button>

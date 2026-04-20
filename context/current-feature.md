@@ -1,6 +1,6 @@
 ## Current feature
 
-Session 12 — Streak System + Real Activity Grid
+Session 14 — Production Polish
 
 ## Status
 
@@ -8,27 +8,32 @@ Completed
 
 ## Goals
 
-- Create `actions/streak.ts` with `fetchStreak()` server action
-- Create `app/api/streak/route.ts` for GET streak data
-- Refactor `app/dashboard/layout.tsx` into server wrapper + `DashboardShell` client component
-- Update `Sidebar` to accept real `activeDays: string[]` and `streakCount: number` props (replacing mock)
-- Update `Header` to accept real `streakCount: number` prop (replacing mock)
-- Wire `InactivityBanner` in Today page to real `lastDate` from streak doc
+- Responsive layout — mobile sidebar overlay, hamburger button in header
+- Loading skeletons (`loading.tsx`) for all 4 dashboard routes
+- Error boundaries (`error.tsx`) for dashboard + root
+- 404 page (`not-found.tsx`)
+- Remove debug `console.error` from `actions/projects.ts`
+- Update `.env.example` with `NEXTAUTH_URL`
+- 23 new tests (247 total, up from 224)
+- Clean `npm run build`
 
-## Files to touch
+## Files touched
 
-- `actions/streak.ts` — new
-- `app/api/streak/route.ts` — new
-- `app/dashboard/layout.tsx` — server wrapper fetches streak + progress
-- `components/dashboard/DashboardShell.tsx` — new client component (sidebar toggle state)
-- `components/dashboard/sidebar.tsx` — accept real activeDays/streak props
-- `components/dashboard/header.tsx` — accept real streak prop
-- `app/dashboard/today/page.tsx` — compute real daysSinceActive from streak
-
-## References
-
-- `lib/db/models/Streak.ts`
-- `actions/progress.ts` (touchStreak already wired here)
+- `components/dashboard/DashboardShell.tsx` — responsive grid, mobile sidebar overlay
+- `components/dashboard/header.tsx` — hamburger button, hide progress/resume on mobile
+- `app/dashboard/loading.tsx` — new
+- `app/dashboard/today/loading.tsx` — new
+- `app/dashboard/month/[id]/loading.tsx` — new
+- `app/dashboard/portfolio/loading.tsx` — new
+- `app/dashboard/error.tsx` — new
+- `app/error.tsx` — new
+- `app/not-found.tsx` — new
+- `actions/projects.ts` — removed console.error
+- `.env.example` — added NEXTAUTH_URL
+- `__tests__/components/loading.test.tsx` — new
+- `__tests__/components/error.test.tsx` — new
+- `__tests__/components/not-found.test.tsx` — new
+- `__tests__/components/dashboard/header.test.tsx` — 3 new tests for hamburger
 
 # History
 
@@ -43,3 +48,4 @@ Completed
 - **2026-04-19** — Configured Geist, Geist Mono, and Instrument Serif fonts via `next/font/google`
 - **2026-04-19** — Built dashboard layout with collapsible sidebar, header bar, and dashboard overview page
 - **2026-04-19** — Dashboard UI Phase 1 completed: sidebar, header, stats grid, roadmap table, today card, zen quote
+- **2026-04-20** — Session 14: Production Polish — responsive layout, loading skeletons, error boundaries, 404 page, clean build
