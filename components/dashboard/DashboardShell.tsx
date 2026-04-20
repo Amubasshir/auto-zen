@@ -9,9 +9,10 @@ type Props = {
   streakCount: number;
   activeDays: string[];
   overallProgress: number;
+  pathType: "no-code" | "developer";
 };
 
-export function DashboardShell({ children, streakCount, activeDays, overallProgress }: Props) {
+export function DashboardShell({ children, streakCount, activeDays, overallProgress, pathType }: Props) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
   return (
@@ -26,6 +27,7 @@ export function DashboardShell({ children, streakCount, activeDays, overallProgr
         onToggle={() => setSidebarExpanded((e) => !e)}
         streakCount={streakCount}
         activeDays={activeDays}
+        pathType={pathType}
       />
       <div className="grid grid-rows-[64px_1fr] min-w-0">
         <Header streakCount={streakCount} overallProgress={overallProgress} />

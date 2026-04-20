@@ -12,6 +12,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      onboardingDone?: boolean;
     };
   }
 }
@@ -90,7 +91,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
       if (user) {
         if (account?.provider === "github") {
           // GitHub user.id is GitHub's numeric ID — look up the MongoDB _id instead
@@ -98,14 +99,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             await dbConnect();
             const dbUser = await User.findOne({ email: user.email?.toLowerCase() });
             token.id = dbUser?._id.toString() ?? user.id;
+            token.onboardingDone = dbUser?.onboardingDone ?? false;
           } catch {
             token.id = user.id;
+            token.onboardingDone = false;
           }
         } else {
           token.id = user.id;
+          try {
+            await dbConnect();
+            const dbUser = await User.findById(user.id);
+            token.onboardingDone = dbUser?.onboardingDone ?? false;
+          } catch {
+            token.onboardingDone = false;
+          }
         }
         token.name = user.name;
       }
+
+      // Refresh onboardingDone after session.update() call (e.g. post-onboarding)
+      if (trigger === "update" && token.id) {
+        try {
+          await dbConnect();
+          const dbUser = await User.findById(token.id as string);
+          token.onboardingDone = dbUser?.onboardingDone ?? false;
+        } catch {
+          // keep existing value
+        }
+      }
+
       return token;
     },
 
@@ -113,6 +135,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.name = token.name;
+        session.user.onboardingDone = token.onboardingDone as boolean | undefined;
       }
       return session;
     },

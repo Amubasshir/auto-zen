@@ -1,21 +1,49 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default auth((req) => {
+type AuthedSession = { user?: { id?: string } } | null;
+
+/**
+ * Pure redirect logic — extracted for unit testing without edge-runtime dependencies.
+ */
+export function getRedirectUrl(
+  pathname: string,
+  session: AuthedSession,
+  baseUrl: string,
+): string | null {
+  const isAuthed = Boolean(session?.user?.id);
+
+  // Unauthenticated — protect dashboard and onboarding
+  if (!isAuthed) {
+    if (pathname.startsWith("/dashboard") || pathname === "/onboarding") {
+      return `${baseUrl}/login`;
+    }
+    return null;
+  }
+
+  // Authenticated on auth pages — send to dashboard
+  if (pathname === "/login" || pathname === "/signup") {
+    return `${baseUrl}/dashboard`;
+  }
+
+  return null;
+}
+
+export default auth(function middleware(
+  req: NextRequest & { auth: AuthedSession },
+) {
   const { pathname } = req.nextUrl;
-  const isLoggedIn = !!req.auth;
+  const baseUrl = req.nextUrl.origin;
+  const redirectUrl = getRedirectUrl(pathname, req.auth, baseUrl);
 
-  // Redirect unauthenticated users from dashboard to login
-  if (!isLoggedIn && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  if (redirectUrl) {
+    return NextResponse.redirect(new URL(redirectUrl));
   }
 
-  // Redirect authenticated users away from auth pages
-  if (isLoggedIn && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-  }
+  return NextResponse.next();
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup"],
+  matcher: ["/dashboard/:path*", "/onboarding", "/login", "/signup"],
 };

@@ -10,6 +10,7 @@ export interface IUser extends Document {
   weeklyHours: number;
   weeklyTarget: number;
   startDate?: string;
+  onboardingDone: boolean;
   createdAt: Date;
 }
 
@@ -24,6 +25,7 @@ const UserSchema = new Schema<IUser>(
     weeklyHours: { type: Number, default: 10, min: 1 },
     weeklyTarget: { type: Number, default: 5, min: 1 },
     startDate: String,
+    onboardingDone: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
