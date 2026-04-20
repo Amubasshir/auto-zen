@@ -36,6 +36,7 @@ export async function fetchResourcesForWeeks(
       difficulty: d.difficulty,
       duration: d.duration,
       tasks: d.tasks ?? [],
+      completed: d.completed ?? false,
       createdAt: d.createdAt?.toISOString() ?? new Date().toISOString(),
     }));
   } catch {
@@ -74,6 +75,7 @@ export async function createResource(
         difficulty: doc.difficulty,
         duration: doc.duration,
         tasks: doc.tasks ?? [],
+        completed: doc.completed ?? false,
         createdAt: doc.createdAt?.toISOString() ?? new Date().toISOString(),
       },
     };
@@ -99,6 +101,30 @@ export async function updateResource(
     const doc = await CustomResource.findOneAndUpdate(
       { _id: id, userId: session.user.id },
       { $set: parsed.data },
+      { new: true },
+    );
+
+    if (!doc) return { success: false, error: "Resource not found" };
+
+    revalidatePath("/dashboard", "layout");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to update resource" };
+  }
+}
+
+export async function toggleResourceCompleted(
+  id: string,
+  completed: boolean,
+): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+  try {
+    await dbConnect();
+    const doc = await CustomResource.findOneAndUpdate(
+      { _id: id, userId: session.user.id },
+      { $set: { completed } },
       { new: true },
     );
 

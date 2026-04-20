@@ -105,6 +105,7 @@ export function MonthPageClient({
             key={week.id}
             week={week}
             weekIndex={weekOffset + i + 1}
+            monthNumber={month.monthNumber}
             defaultOpen={i === 0}
             progress={progress}
             resources={resourcesByWeek[week.id] ?? []}

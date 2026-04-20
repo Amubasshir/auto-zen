@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Pencil } from "lucide-react";
 import type { Item } from "@/lib/mock-data";
 
 type Props = {
@@ -61,7 +61,7 @@ export function ItemRow({ item, isDone, doneTasks, onClick, onToggle }: Props) {
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => e.key === "Enter" && onClick() : undefined}
-      className={`group grid grid-cols-[22px_1fr_auto_auto_auto_28px] gap-4 items-center px-5 py-3.25 border-b border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface
+      className={`group grid grid-cols-[22px_1fr_auto_auto_auto_auto_28px] gap-4 items-center px-5 py-3.25 border-b border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface
         ${onClick ? "cursor-pointer" : ""}
         ${done ? "opacity-75" : ""}`}
     >
@@ -101,6 +101,15 @@ export function ItemRow({ item, isDone, doneTasks, onClick, onToggle }: Props) {
       <span className="font-mono text-[11px] text-zen-text-4 min-w-12 text-right">
         {durLabel}
       </span>
+
+      {/* Edit — hover only */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onClick?.(); }}
+        aria-label="Open detail"
+        className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-zen-surface-2 hover:border-zen-line hover:text-zen-text transition-all duration-150"
+      >
+        <Pencil size={13} />
+      </button>
 
       {/* Chevron */}
       <ChevronRight

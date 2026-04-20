@@ -16,7 +16,10 @@ export default function OnboardingPage() {
   const [pathType, setPathType] = useState<PathType | null>(null);
   const [weeklyHours, setWeeklyHours] = useState(10);
   const [weeklyTarget, setWeeklyTarget] = useState(5);
-  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

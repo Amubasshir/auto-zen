@@ -30,5 +30,6 @@ export type ClientResource = {
   difficulty: string;
   duration: string;
   tasks: string[];
+  completed: boolean;
   createdAt: string;
 };

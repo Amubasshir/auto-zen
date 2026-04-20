@@ -6,6 +6,7 @@ import { ItemRow } from "./ItemRow";
 import { ResourceRow } from "./ResourceRow";
 import { NotesPanel } from "@/components/overlays/NotesPanel";
 import { ResourceForm } from "@/components/overlays/ResourceForm";
+import { ResourceDrawer } from "@/components/overlays/ResourceDrawer";
 import type { Week, Item } from "@/lib/mock-data";
 import type { ProgressState } from "@/lib/validators/progress";
 import type { ClientResource } from "@/lib/validators/resource";
@@ -13,6 +14,7 @@ import type { ClientResource } from "@/lib/validators/resource";
 type Props = {
   week: Week;
   weekIndex: number;
+  monthNumber: number;
   defaultOpen?: boolean;
   progress: ProgressState;
   resources: ClientResource[];
@@ -42,6 +44,7 @@ function resolveTaskDoneCount(
 export function WeekCard({
   week,
   weekIndex,
+  monthNumber,
   defaultOpen = false,
   progress,
   resources,
@@ -54,6 +57,7 @@ export function WeekCard({
   const [showNotes, setShowNotes] = useState(false);
   const [showResourceForm, setShowResourceForm] = useState(false);
   const [editingResource, setEditingResource] = useState<ClientResource | null>(null);
+  const [drawerResource, setDrawerResource] = useState<ClientResource | null>(null);
 
   const totalTasks = week.items.reduce((s, item) => s + item.tasks.length, 0);
   const doneTasks = week.items.reduce(
@@ -87,6 +91,11 @@ export function WeekCard({
 
   function handleResourceDeleted(id: string) {
     onResourcesChange?.(week.id, resources.filter((r) => r.id !== id));
+  }
+
+  function handleResourceToggled(id: string, completed: boolean) {
+    onResourcesChange?.(week.id, resources.map((r) => r.id === id ? { ...r, completed } : r));
+    setDrawerResource((prev) => prev?.id === id ? { ...prev, completed } : prev);
   }
 
   return (
@@ -171,8 +180,10 @@ export function WeekCard({
                   <ResourceRow
                     key={resource.id}
                     resource={resource}
+                    onOpen={setDrawerResource}
                     onEdit={openEditForm}
                     onDeleted={handleResourceDeleted}
+                    onToggled={handleResourceToggled}
                   />
                 ))}
               </div>
@@ -195,6 +206,17 @@ export function WeekCard({
         editing={editingResource}
         onClose={() => setShowResourceForm(false)}
         onSaved={handleResourceSaved}
+      />
+
+      <ResourceDrawer
+        open={drawerResource !== null}
+        onClose={() => setDrawerResource(null)}
+        resource={drawerResource}
+        weekId={week.id}
+        weekIndex={weekIndex}
+        monthNumber={monthNumber}
+        onEdit={(r) => { setDrawerResource(null); openEditForm(r); }}
+        onToggled={handleResourceToggled}
       />
     </>
   );

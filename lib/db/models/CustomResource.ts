@@ -9,6 +9,7 @@ export interface ICustomResource extends Document {
   difficulty: "beginner" | "intermediate" | "advanced";
   duration: string;
   tasks: string[];
+  completed: boolean;
   createdAt: Date;
 }
 
@@ -30,6 +31,7 @@ const CustomResourceSchema = new Schema<ICustomResource>(
     },
     duration: { type: String, default: "" },
     tasks: { type: [String], default: [] },
+    completed: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
