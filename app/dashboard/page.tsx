@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { mockMonths, mockUser } from "@/lib/mock-data";
+import { mockMonths } from "@/lib/mock-data";
 import { Ring } from "@/components/ui/ring";
 import { Play, ChevronRight, Plus } from "lucide-react";
+import { fetchStreak } from "@/actions/streak";
+import { fetchProgress } from "@/actions/progress";
+import { auth } from "@/auth";
 
 function countAllTasks() {
   let done = 0;
@@ -25,8 +28,15 @@ function countAllTasks() {
   return { done, total, monthsStarted };
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const { done, total, monthsStarted } = countAllTasks();
+
+  const session = await auth();
+  const [streak, progress] = await Promise.all([fetchStreak(), fetchProgress()]);
+
+  const completedItemCount = Object.values(progress.completedItems).filter(Boolean).length;
+  const totalItemCount = mockMonths.reduce((acc, m) => acc + m.weeks.reduce((a, w) => a + w.items.length, 0), 0);
+  const overallProgress = totalItemCount > 0 ? Math.round((completedItemCount / totalItemCount) * 100) : 0;
 
   const now = new Date();
   const hour = now.getHours();
@@ -37,6 +47,7 @@ export default function DashboardPage() {
   const dayName = dayNames[now.getDay()];
   const monthName = monthNames[now.getMonth()];
   const dateNum = now.getDate();
+  const userName = session?.user?.name ?? "there";
 
   return (
     <>
@@ -44,7 +55,7 @@ export default function DashboardPage() {
       <div className="flex items-end justify-between gap-4 mb-7">
         <div className="flex flex-col gap-2.5 min-w-0">
           <span className="text-zen-text-3 text-[13px]">
-            {timeGreeting}, <em className="font-serif italic text-zen-text-2">{mockUser.name}</em>. Breathe in — today is {dayName}, {monthName} {dateNum}.
+            {timeGreeting}, <em className="font-serif italic text-zen-text-2">{userName}</em>. Breathe in — today is {dayName}, {monthName} {dateNum}.
           </span>
           <h1 className="font-serif text-[36px] leading-tight tracking-tight m-0">
             Where you are on the path.
@@ -66,11 +77,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr] gap-3.5 mb-5">
         <StatCard
           label="Overall Progress"
-          value={`${mockUser.overallProgress}`}
+          value={`${overallProgress}`}
           suffix="%"
           sub="On track"
-          delta="+4% this week"
-          ring={<Ring pct={mockUser.overallProgress} size={80} strokeWidth={5} label={`${mockUser.overallProgress}`} sublabel="pct" />}
+          ring={<Ring pct={overallProgress} size={80} strokeWidth={5} label={`${overallProgress}`} sublabel="pct" />}
         />
         <StatCard
           label="Tasks Completed"
@@ -86,9 +96,9 @@ export default function DashboardPage() {
         />
         <StatCard
           label="Current Streak"
-          value={`${mockUser.streak}`}
+          value={`${streak.count}`}
           suffix="days"
-          sub="Personal best: 18d"
+          sub={streak.personalBest > 0 ? `Personal best: ${streak.personalBest}d` : "Start your streak!"}
         />
       </div>
 

@@ -9,11 +9,14 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-import { mockMonths, mockActivityGrid, mockUser } from "@/lib/mock-data";
+import { mockMonths } from "@/lib/mock-data";
+import { buildActivityGrid } from "@/lib/streak-utils";
 
 type SidebarProps = {
   expanded: boolean;
   onToggle: () => void;
+  streakCount: number;
+  activeDays: string[];
 };
 
 function countProgress(month: (typeof mockMonths)[number]) {
@@ -30,12 +33,6 @@ function countProgress(month: (typeof mockMonths)[number]) {
   return { done, total, pct: total > 0 ? Math.round((done / total) * 100) : 0 };
 }
 
-function activityLevel(active: boolean, index: number): 0 | 1 | 2 | 3 | 4 {
-  if (!active) return 0;
-  // Vary intensity based on position to simulate different completion levels
-  const mod = (index * 7 + 3) % 4;
-  return (mod + 1) as 1 | 2 | 3 | 4;
-}
 
 const LEVEL_STYLE: Record<number, string> = {
   0: "bg-zen-surface-2",
@@ -45,7 +42,7 @@ const LEVEL_STYLE: Record<number, string> = {
   4: "bg-jade",
 };
 
-export function Sidebar({ expanded, onToggle }: SidebarProps) {
+export function Sidebar({ expanded, onToggle, streakCount, activeDays }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -172,12 +169,12 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
             <PathButton
               name="No-Code"
               hint="Zapier · Make"
-              active={mockUser.pathType === "no-code"}
+              active={false}
             />
             <PathButton
               name="Developer"
               hint="APIs · Code"
-              active={mockUser.pathType === "developer"}
+              active={false}
             />
           </div>
         </div>
@@ -188,19 +185,15 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
         <div className="px-4 pb-4 border-t border-zen-line shrink-0">
           <div className="flex justify-between items-baseline text-[11px] tracking-[0.12em] uppercase text-zen-text-5 mb-2.5 pt-3">
             <span>Activity</span>
-            <span className="font-mono text-ember tracking-[0.04em]">{mockUser.streak}d</span>
+            <span className="font-mono text-ember tracking-[0.04em]">{streakCount}d</span>
           </div>
           <div className="grid grid-cols-7 gap-1">
-            {mockActivityGrid.map((active, i) => {
-              const lvl = activityLevel(active, i);
-              return (
-                <div
-                  key={i}
-                  className={`aspect-square rounded-[4px] ${LEVEL_STYLE[lvl]}`}
-                  title={`Day ${i + 1}: level ${lvl}`}
-                />
-              );
-            })}
+            {buildActivityGrid(activeDays).map((lvl, i) => (
+              <div
+                key={i}
+                className={`aspect-square rounded-[4px] ${LEVEL_STYLE[lvl]}`}
+              />
+            ))}
           </div>
           <div className="mt-2.5 flex items-center gap-2 text-[11px] text-zen-text-4 font-mono">
             <span>Less</span>

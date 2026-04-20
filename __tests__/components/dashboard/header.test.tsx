@@ -18,38 +18,50 @@ jest.mock("next/link", () => {
 
 import { Header } from "@/components/dashboard/header";
 
+const DEFAULT_PROPS = { streakCount: 12, overallProgress: 28 };
+
 describe("Header", () => {
   beforeEach(() => {
     mockUseSession.mockReturnValue({ data: null, status: "unauthenticated" });
   });
 
   it("renders AutoZen breadcrumb", () => {
-    render(<Header />);
+    render(<Header {...DEFAULT_PROPS} />);
     expect(screen.getByText("AutoZen")).toBeInTheDocument();
   });
 
-  it("renders global progress percentage from mockUser (28%)", () => {
-    render(<Header />);
+  it("renders global progress percentage from prop", () => {
+    render(<Header {...DEFAULT_PROPS} />);
     expect(screen.getByText("28%")).toBeInTheDocument();
   });
 
-  it("renders streak chip (12d from mockUser)", () => {
-    render(<Header />);
+  it("renders a different progress percentage when prop changes", () => {
+    render(<Header streakCount={0} overallProgress={55} />);
+    expect(screen.getByText("55%")).toBeInTheDocument();
+  });
+
+  it("renders streak chip with streakCount prop", () => {
+    render(<Header {...DEFAULT_PROPS} />);
     expect(screen.getByText("12d")).toBeInTheDocument();
   });
 
+  it("renders streak count of 0", () => {
+    render(<Header streakCount={0} overallProgress={0} />);
+    expect(screen.getByText("0d")).toBeInTheDocument();
+  });
+
   it("renders Resume button", () => {
-    render(<Header />);
+    render(<Header {...DEFAULT_PROPS} />);
     expect(screen.getByText("Resume")).toBeInTheDocument();
   });
 
-  it("renders user initial avatar — falls back to mockUser 'A'", () => {
-    render(<Header />);
+  it("renders user initial avatar — falls back to 'A' when unauthenticated", () => {
+    render(<Header {...DEFAULT_PROPS} />);
     expect(screen.getByText("A")).toBeInTheDocument();
   });
 
   it("does not show sign-out button when unauthenticated", () => {
-    render(<Header />);
+    render(<Header {...DEFAULT_PROPS} />);
     expect(screen.queryByLabelText(/sign out/i)).not.toBeInTheDocument();
   });
 
@@ -58,7 +70,7 @@ describe("Header", () => {
       data: { user: { name: "Zara", email: "zara@example.com", id: "u1" } },
       status: "authenticated",
     });
-    render(<Header />);
+    render(<Header {...DEFAULT_PROPS} />);
     expect(screen.getByLabelText(/sign out/i)).toBeInTheDocument();
     expect(screen.getByText("Z")).toBeInTheDocument();
   });
@@ -68,7 +80,7 @@ describe("Header", () => {
       data: { user: { name: "Zara", email: "zara@example.com", id: "u1" } },
       status: "authenticated",
     });
-    render(<Header />);
+    render(<Header {...DEFAULT_PROPS} />);
     fireEvent.click(screen.getByLabelText(/sign out/i));
     expect(mockSignOut).toHaveBeenCalledWith({ callbackUrl: "/login" });
   });

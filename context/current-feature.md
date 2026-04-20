@@ -1,6 +1,6 @@
 ## Current feature
 
-Dashboard UI Phase 1 — ShadCN setup, dashboard route, main layout, and global styles.
+Session 12 — Streak System + Real Activity Grid
 
 ## Status
 
@@ -8,20 +8,27 @@ Completed
 
 ## Goals
 
-- Initialize ShadCN UI and install required components
-- Create dashboard route at `/dashboard`
-- Build main dashboard layout matching the reference screenshot
-- Add any global styles needed
+- Create `actions/streak.ts` with `fetchStreak()` server action
+- Create `app/api/streak/route.ts` for GET streak data
+- Refactor `app/dashboard/layout.tsx` into server wrapper + `DashboardShell` client component
+- Update `Sidebar` to accept real `activeDays: string[]` and `streakCount: number` props (replacing mock)
+- Update `Header` to accept real `streakCount: number` prop (replacing mock)
+- Wire `InactivityBanner` in Today page to real `lastDate` from streak doc
+
+## Files to touch
+
+- `actions/streak.ts` — new
+- `app/api/streak/route.ts` — new
+- `app/dashboard/layout.tsx` — server wrapper fetches streak + progress
+- `components/dashboard/DashboardShell.tsx` — new client component (sidebar toggle state)
+- `components/dashboard/sidebar.tsx` — accept real activeDays/streak props
+- `components/dashboard/header.tsx` — accept real streak prop
+- `app/dashboard/today/page.tsx` — compute real daysSinceActive from streak
 
 ## References
 
-- @/lib/mock-data.ts
-- @dashboard.html
-- @style.css
-
-## Noted
-
-Spec: `context/features/dashboard-phase-1-spec.md`
+- `lib/db/models/Streak.ts`
+- `actions/progress.ts` (touchStreak already wired here)
 
 # History
 

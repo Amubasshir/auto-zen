@@ -20,10 +20,12 @@ async function touchStreak(userId: string) {
 
   const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
   const newCount = streak.lastDate === yesterday ? streak.count + 1 : 1;
+  const newPersonalBest = Math.max(streak.personalBest ?? 0, newCount);
   const activeDays = [...streak.activeDays, today].slice(-28); // keep last 28
 
   await Streak.findByIdAndUpdate(streak._id, {
     count: newCount,
+    personalBest: newPersonalBest,
     lastDate: today,
     activeDays,
   });

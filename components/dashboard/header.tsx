@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { ChevronRight, Play, LogOut } from "lucide-react";
-import { mockUser } from "@/lib/mock-data";
 
 function useBreadcrumbs() {
   const pathname = usePathname();
@@ -37,11 +36,16 @@ function useBreadcrumbs() {
   return crumbs;
 }
 
-export function Header() {
+type HeaderProps = {
+  streakCount: number;
+  overallProgress: number;
+};
+
+export function Header({ streakCount, overallProgress }: HeaderProps) {
   const crumbs = useBreadcrumbs();
   const { data: session } = useSession();
 
-  const userName = session?.user?.name ?? mockUser.name;
+  const userName = session?.user?.name ?? "A";
   const userInitial = userName.charAt(0).toUpperCase();
 
   return (
@@ -70,12 +74,12 @@ export function Header() {
       {/* Global progress */}
       <div className="flex items-center gap-3 min-w-65">
         <span className="font-mono text-xs text-zen-text-2 tracking-[0.02em]">
-          {mockUser.overallProgress}%
+          {overallProgress}%
         </span>
         <div className="flex-1 h-1.5 rounded-full bg-zen-surface-2 overflow-hidden">
           <div
             className="block h-full bg-jade rounded-full"
-            style={{ width: `${mockUser.overallProgress}%` }}
+            style={{ width: `${overallProgress}%` }}
           />
         </div>
       </div>
@@ -83,7 +87,7 @@ export function Header() {
       {/* Streak chip */}
       <span className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-xs whitespace-nowrap border-ember/40 text-zen-text bg-zen-surface">
         <span className="w-1.5 h-1.5 rounded-full bg-ember" />
-        {mockUser.streak}d
+        {streakCount}d
       </span>
 
       {/* Resume button */}

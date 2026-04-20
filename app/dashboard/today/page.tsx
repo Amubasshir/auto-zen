@@ -1,9 +1,12 @@
-import { mockMonths, mockUser } from "@/lib/mock-data";
+import { mockMonths } from "@/lib/mock-data";
 import type { Item, Month, Week } from "@/lib/mock-data";
 import { TodayHero } from "@/components/today/TodayHero";
 import { BreathWidget } from "@/components/today/BreathWidget";
 import { PendingGrid } from "@/components/today/PendingGrid";
 import { InactivityBanner } from "@/components/today/InactivityBanner";
+import { fetchStreak } from "@/actions/streak";
+import { computeDaysSince } from "@/lib/streak-utils";
+import { auth } from "@/auth";
 
 type CurrentItem = { item: Item; week: Week; month: Month };
 
@@ -14,7 +17,6 @@ function findCurrentItem(): CurrentItem | null {
         if (!item.completed) {
           return { item, week, month };
         }
-        // Pick an item that is partially done (some tasks incomplete)
         const hasIncompleteTasks = item.tasks.some((t) => !t.completed);
         if (hasIncompleteTasks) {
           return { item, week, month };
@@ -25,17 +27,13 @@ function findCurrentItem(): CurrentItem | null {
   return null;
 }
 
-function daysSinceLastActive(): number {
-  // With mock data, we derive from the streak count and activity grid
-  // If streak > 0 and today would be active, assume 0 days inactive
-  // For mock purposes: streak 12 means active recently
-  if (mockUser.streak > 0) return 0;
-  return 4; // mock inactive state
-}
 
-export default function TodayPage() {
+export default async function TodayPage() {
+  const session = await auth();
+  const streak = session?.user?.id ? await fetchStreak() : { count: 0, lastDate: "", activeDays: [] };
+
   const current = findCurrentItem();
-  const inactiveDays = daysSinceLastActive();
+  const inactiveDays = computeDaysSince(streak.lastDate);
 
   const now = new Date();
   const hour = now.getHours();
@@ -44,12 +42,14 @@ export default function TodayPage() {
   const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+  const userName = session?.user?.name ?? "there";
+
   return (
     <>
       {/* Page head */}
       <div className="mb-6">
         <p className="m-0 text-zen-text-3 text-[13px]">
-          {greeting}, <em className="font-serif italic text-zen-text-2">{mockUser.name}</em>.{" "}
+          {greeting}, <em className="font-serif italic text-zen-text-2">{userName}</em>.{" "}
           {dayNames[now.getDay()]}, {monthNames[now.getMonth()]} {now.getDate()}.
         </p>
         <h1 className="font-serif text-[36px] leading-tight tracking-tight m-0 mt-2">

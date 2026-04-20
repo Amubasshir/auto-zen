@@ -1,31 +1,37 @@
-"use client";
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { fetchStreak } from "@/actions/streak";
+import { fetchProgress } from "@/actions/progress";
+import { mockMonths } from "@/lib/mock-data";
 
-import { useState } from "react";
-import { Sidebar } from "@/components/dashboard/sidebar";
-import { Header } from "@/components/dashboard/header";
+function computeOverallProgress(completedItems: Record<string, boolean>): number {
+  let total = 0;
+  let done = 0;
+  for (const month of mockMonths) {
+    for (const week of month.weeks) {
+      for (const item of week.items) {
+        total++;
+        if (completedItems[item.id]) done++;
+      }
+    }
+  }
+  return total > 0 ? Math.round((done / total) * 100) : 0;
+}
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [streak, progress] = await Promise.all([fetchStreak(), fetchProgress()]);
+  const overallProgress = computeOverallProgress(progress.completedItems);
 
   return (
-    <div
-      className="relative grid h-full z-1 transition-[grid-template-columns] duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
-      style={{
-        gridTemplateColumns: sidebarExpanded ? "268px 1fr" : "72px 1fr",
-      }}
+    <DashboardShell
+      streakCount={streak.count}
+      activeDays={streak.activeDays}
+      overallProgress={overallProgress}
     >
-      <Sidebar
-        expanded={sidebarExpanded}
-        onToggle={() => setSidebarExpanded((e) => !e)}
-      />
-      <div className="grid grid-rows-[64px_1fr] min-w-0">
-        <Header />
-        <main className="overflow-auto p-7 pb-20 content-scroll">{children}</main>
-      </div>
-    </div>
+      {children}
+    </DashboardShell>
   );
 }
