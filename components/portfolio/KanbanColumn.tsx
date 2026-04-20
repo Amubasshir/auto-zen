@@ -1,10 +1,14 @@
 import { Plus } from "lucide-react";
 import { ProjectCard } from "./ProjectCard";
-import type { ProjectPortfolio, ProjectStatus } from "@/lib/mock-data";
+import type { ClientProject, ProjectStatus } from "@/lib/validators/project";
 
 type Props = {
   status: ProjectStatus;
-  projects: ProjectPortfolio[];
+  projects: ClientProject[];
+  onStatusChange: (id: string) => void;
+  onEdit: (project: ClientProject) => void;
+  onDelete: (id: string) => void;
+  onAddClick: () => void;
 };
 
 const COLUMN_META: Record<ProjectStatus, { label: string; headingColor: string }> = {
@@ -22,7 +26,14 @@ const COLUMN_META: Record<ProjectStatus, { label: string; headingColor: string }
   },
 };
 
-export function KanbanColumn({ status, projects }: Props) {
+export function KanbanColumn({
+  status,
+  projects,
+  onStatusChange,
+  onEdit,
+  onDelete,
+  onAddClick,
+}: Props) {
   const { label, headingColor } = COLUMN_META[status];
 
   return (
@@ -38,12 +49,21 @@ export function KanbanColumn({ status, projects }: Props) {
       {/* Cards */}
       <div className="flex flex-col gap-2.5 flex-1">
         {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onStatusChange={onStatusChange}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         ))}
       </div>
 
       {/* Add button */}
-      <button className="flex items-center gap-2 w-full px-3 py-2.5 rounded-[8px] border border-dashed border-zen-line text-zen-text-4 text-[12px] font-mono tracking-[0.06em] hover:border-zen-line-strong hover:text-zen-text-3 transition-colors duration-150 mt-auto">
+      <button
+        onClick={onAddClick}
+        className="flex items-center gap-2 w-full px-3 py-2.5 rounded-[8px] border border-dashed border-zen-line text-zen-text-4 text-[12px] font-mono tracking-[0.06em] hover:border-zen-line-strong hover:text-zen-text-3 transition-colors duration-150 mt-auto"
+      >
         <Plus size={12} />
         Add project
       </button>
