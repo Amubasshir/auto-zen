@@ -84,4 +84,22 @@ describe("Header", () => {
     fireEvent.click(screen.getByLabelText(/sign out/i));
     expect(mockSignOut).toHaveBeenCalledWith({ callbackUrl: "/login" });
   });
+
+  it("renders mobile hamburger button when onMobileMenuToggle is provided", () => {
+    const handler = jest.fn();
+    render(<Header {...DEFAULT_PROPS} onMobileMenuToggle={handler} />);
+    expect(screen.getByLabelText("Open menu")).toBeInTheDocument();
+  });
+
+  it("calls onMobileMenuToggle when hamburger is clicked", () => {
+    const handler = jest.fn();
+    render(<Header {...DEFAULT_PROPS} onMobileMenuToggle={handler} />);
+    fireEvent.click(screen.getByLabelText("Open menu"));
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not render mobile hamburger button when onMobileMenuToggle is absent", () => {
+    render(<Header {...DEFAULT_PROPS} />);
+    expect(screen.queryByLabelText("Open menu")).not.toBeInTheDocument();
+  });
 });
