@@ -74,8 +74,9 @@ export async function createProject(
 
     revalidatePath("/dashboard/portfolio");
     return { success: true, project: toClient(doc) };
-  } catch {
-    return { success: false, error: "Failed to create project" };
+  } catch (err) {
+    console.error("[createProject]", err);
+    return { success: false, error: err instanceof Error ? err.message : "Failed to create project" };
   }
 }
 

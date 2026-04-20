@@ -90,9 +90,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
 
-    jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id;
+        if (account?.provider === "github") {
+          // GitHub user.id is GitHub's numeric ID — look up the MongoDB _id instead
+          try {
+            await dbConnect();
+            const dbUser = await User.findOne({ email: user.email?.toLowerCase() });
+            token.id = dbUser?._id.toString() ?? user.id;
+          } catch {
+            token.id = user.id;
+          }
+        } else {
+          token.id = user.id;
+        }
         token.name = user.name;
       }
       return token;

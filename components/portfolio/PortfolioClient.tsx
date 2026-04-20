@@ -5,8 +5,7 @@ import { Plus } from "lucide-react";
 import { KanbanBoard } from "./KanbanBoard";
 import { AddProjectForm } from "./AddProjectForm";
 import { updateProject, deleteProject } from "@/actions/projects";
-import type { ClientProject } from "@/lib/validators/project";
-import { nextStatus } from "@/lib/validators/project";
+import type { ClientProject, ProjectStatus } from "@/lib/validators/project";
 
 type Props = {
   initialProjects: ClientProject[];
@@ -16,22 +15,32 @@ export function PortfolioClient({ initialProjects }: Props) {
   const [projects, setProjects] = useState(initialProjects);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ClientProject | null>(null);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   const total = projects.length;
   const inProgress = projects.filter((p) => p.status === "in-progress").length;
   const completed = projects.filter((p) => p.status === "completed").length;
 
-  function handleStatusChange(id: string) {
+  function handleDragStart(id: string) {
+    setDraggedId(id);
+  }
+
+  function handleDrop(newStatus: ProjectStatus) {
+    if (!draggedId) return;
+    const project = projects.find((p) => p.id === draggedId);
+    if (!project || project.status === newStatus) {
+      setDraggedId(null);
+      return;
+    }
+
     setProjects((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, status: nextStatus(p.status) } : p,
-      ),
+      prev.map((p) => (p.id === draggedId ? { ...p, status: newStatus } : p)),
     );
-    const project = projects.find((p) => p.id === id);
-    if (!project) return;
+    const id = draggedId;
+    setDraggedId(null);
     startTransition(async () => {
-      await updateProject(id, { status: nextStatus(project.status) });
+      await updateProject(id, { status: newStatus });
     });
   }
 
@@ -104,7 +113,9 @@ export function PortfolioClient({ initialProjects }: Props) {
       {/* Kanban board */}
       <KanbanBoard
         projects={projects}
-        onStatusChange={handleStatusChange}
+        draggedId={draggedId}
+        onDragStart={handleDragStart}
+        onDrop={handleDrop}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onAddClick={openNewForm}

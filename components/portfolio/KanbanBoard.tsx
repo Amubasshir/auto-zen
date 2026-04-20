@@ -3,7 +3,9 @@ import type { ClientProject, ProjectStatus } from "@/lib/validators/project";
 
 type Props = {
   projects: ClientProject[];
-  onStatusChange: (id: string) => void;
+  draggedId: string | null;
+  onDragStart: (id: string) => void;
+  onDrop: (status: ProjectStatus) => void;
   onEdit: (project: ClientProject) => void;
   onDelete: (id: string) => void;
   onAddClick: () => void;
@@ -11,7 +13,15 @@ type Props = {
 
 const COLUMNS: ProjectStatus[] = ["planned", "in-progress", "completed"];
 
-export function KanbanBoard({ projects, onStatusChange, onEdit, onDelete, onAddClick }: Props) {
+export function KanbanBoard({
+  projects,
+  draggedId,
+  onDragStart,
+  onDrop,
+  onEdit,
+  onDelete,
+  onAddClick,
+}: Props) {
   const byStatus = (status: ProjectStatus) =>
     projects.filter((p) => p.status === status);
 
@@ -22,10 +32,12 @@ export function KanbanBoard({ projects, onStatusChange, onEdit, onDelete, onAddC
           key={status}
           status={status}
           projects={byStatus(status)}
-          onStatusChange={onStatusChange}
+          draggedId={draggedId}
+          onDragStart={onDragStart}
+          onDrop={onDrop}
           onEdit={onEdit}
           onDelete={onDelete}
-          onAddClick={onAddClick}
+          onAddClick={status === "planned" ? onAddClick : undefined}
         />
       ))}
     </div>

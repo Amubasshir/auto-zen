@@ -19,17 +19,17 @@ describe("ProjectCard", () => {
   beforeEach(() => jest.clearAllMocks());
 
   it("renders the project title", () => {
-    render(<ProjectCard project={baseProject} onStatusChange={noop} onEdit={noop} onDelete={noop} />);
+    render(<ProjectCard project={baseProject} onDragStart={noop} onEdit={noop} onDelete={noop} />);
     expect(screen.getByText("Email Responder")).toBeInTheDocument();
   });
 
   it("renders the project description", () => {
-    render(<ProjectCard project={baseProject} onStatusChange={noop} onEdit={noop} onDelete={noop} />);
+    render(<ProjectCard project={baseProject} onDragStart={noop} onEdit={noop} onDelete={noop} />);
     expect(screen.getByText("AI email triage system")).toBeInTheDocument();
   });
 
   it("renders GitHub link when provided", () => {
-    render(<ProjectCard project={baseProject} onStatusChange={noop} onEdit={noop} onDelete={noop} />);
+    render(<ProjectCard project={baseProject} onDragStart={noop} onEdit={noop} onDelete={noop} />);
     expect(screen.getByText("GitHub")).toBeInTheDocument();
     expect(screen.getByText("GitHub").closest("a")).toHaveAttribute(
       "href",
@@ -38,7 +38,7 @@ describe("ProjectCard", () => {
   });
 
   it("renders Demo link when provided", () => {
-    render(<ProjectCard project={baseProject} onStatusChange={noop} onEdit={noop} onDelete={noop} />);
+    render(<ProjectCard project={baseProject} onDragStart={noop} onEdit={noop} onDelete={noop} />);
     expect(screen.getByText("Demo")).toBeInTheDocument();
   });
 
@@ -46,7 +46,7 @@ describe("ProjectCard", () => {
     render(
       <ProjectCard
         project={{ ...baseProject, githubUrl: undefined, demoUrl: undefined }}
-        onStatusChange={noop}
+        onDragStart={noop}
         onEdit={noop}
         onDelete={noop}
       />,
@@ -56,13 +56,13 @@ describe("ProjectCard", () => {
   });
 
   it("renders formatted completion date", () => {
-    render(<ProjectCard project={baseProject} onStatusChange={noop} onEdit={noop} onDelete={noop} />);
+    render(<ProjectCard project={baseProject} onDragStart={noop} onEdit={noop} onDelete={noop} />);
     expect(screen.getByText(/Apr 1, 2026/)).toBeInTheDocument();
   });
 
   it("shows 'In progress' in footer when no completedAt", () => {
     render(
-      <ProjectCard project={{ ...baseProject, completedAt: undefined }} onStatusChange={noop} onEdit={noop} onDelete={noop} />,
+      <ProjectCard project={{ ...baseProject, completedAt: undefined }} onDragStart={noop} onEdit={noop} onDelete={noop} />,
     );
     expect(screen.getByText("In progress")).toBeInTheDocument();
   });
@@ -71,7 +71,7 @@ describe("ProjectCard", () => {
     render(
       <ProjectCard
         project={{ ...baseProject, caseStudy: "Reduced time by 70%" }}
-        onStatusChange={noop}
+        onDragStart={noop}
         onEdit={noop}
         onDelete={noop}
       />,
@@ -81,22 +81,22 @@ describe("ProjectCard", () => {
 
   it("calls onEdit when edit button is clicked", () => {
     const onEdit = jest.fn();
-    render(<ProjectCard project={baseProject} onStatusChange={noop} onEdit={onEdit} onDelete={noop} />);
+    render(<ProjectCard project={baseProject} onDragStart={noop} onEdit={onEdit} onDelete={noop} />);
     fireEvent.click(screen.getByLabelText("Edit project"));
     expect(onEdit).toHaveBeenCalledWith(baseProject);
   });
 
   it("calls onDelete when delete button is clicked", () => {
     const onDelete = jest.fn();
-    render(<ProjectCard project={baseProject} onStatusChange={noop} onEdit={noop} onDelete={onDelete} />);
+    render(<ProjectCard project={baseProject} onDragStart={noop} onEdit={noop} onDelete={onDelete} />);
     fireEvent.click(screen.getByLabelText("Delete project"));
     expect(onDelete).toHaveBeenCalledWith("proj-1");
   });
 
-  it("calls onStatusChange when advance status button is clicked", () => {
-    const onStatusChange = jest.fn();
-    render(<ProjectCard project={baseProject} onStatusChange={onStatusChange} onEdit={noop} onDelete={noop} />);
-    fireEvent.click(screen.getByLabelText("Advance status"));
-    expect(onStatusChange).toHaveBeenCalledWith("proj-1");
+  it("calls onDragStart when card drag begins", () => {
+    const onDragStart = jest.fn();
+    render(<ProjectCard project={baseProject} onDragStart={onDragStart} onEdit={noop} onDelete={noop} />);
+    fireEvent.dragStart(screen.getByText("Email Responder").closest("div")!);
+    expect(onDragStart).toHaveBeenCalledWith("proj-1");
   });
 });

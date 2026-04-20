@@ -24,7 +24,9 @@ describe("KanbanBoard", () => {
     render(
       <KanbanBoard
         projects={projects}
-        onStatusChange={noop}
+        draggedId={null}
+        onDragStart={noop}
+        onDrop={noop}
         onEdit={noop}
         onDelete={noop}
         onAddClick={noop}
@@ -39,7 +41,9 @@ describe("KanbanBoard", () => {
     render(
       <KanbanBoard
         projects={projects}
-        onStatusChange={noop}
+        draggedId={null}
+        onDragStart={noop}
+        onDrop={noop}
         onEdit={noop}
         onDelete={noop}
         onAddClick={noop}
@@ -55,13 +59,14 @@ describe("KanbanBoard", () => {
     render(
       <KanbanBoard
         projects={projects}
-        onStatusChange={noop}
+        draggedId={null}
+        onDragStart={noop}
+        onDrop={noop}
         onEdit={noop}
         onDelete={noop}
         onAddClick={noop}
       />,
     );
-    // Planned=1, In Progress=1, Completed=2
     const counts = screen.getAllByText(/^[0-9]+$/);
     const countValues = counts.map((el) => el.textContent);
     expect(countValues).toContain("1");
@@ -72,7 +77,9 @@ describe("KanbanBoard", () => {
     render(
       <KanbanBoard
         projects={[]}
-        onStatusChange={noop}
+        draggedId={null}
+        onDragStart={noop}
+        onDrop={noop}
         onEdit={noop}
         onDelete={noop}
         onAddClick={noop}
@@ -80,5 +87,21 @@ describe("KanbanBoard", () => {
     );
     expect(screen.getByText("Planned")).toBeInTheDocument();
     expect(screen.queryByText("Project Alpha")).not.toBeInTheDocument();
+  });
+
+  it("shows Add project button only in Planned column", () => {
+    render(
+      <KanbanBoard
+        projects={[]}
+        draggedId={null}
+        onDragStart={noop}
+        onDrop={noop}
+        onEdit={noop}
+        onDelete={noop}
+        onAddClick={noop}
+      />,
+    );
+    const addButtons = screen.getAllByText("Add project");
+    expect(addButtons).toHaveLength(1);
   });
 });
