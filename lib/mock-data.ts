@@ -1,4 +1,4 @@
-// --- Types ---
+﻿// --- Types ---
 
 export type ResourceType = 'youtube' | 'docs' | 'course' | 'article' | 'github';
 
@@ -164,7 +164,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-1-1-3',
-            title: 'Productive Dude — n8n Tutorials',
+            title: 'Productive Dude: n8n Tutorials',
             type: 'youtube',
             url: 'https://www.youtube.com/@productivedude',
             completed: false,
@@ -175,7 +175,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-1-1-4',
-            title: 'Nick Saraev — n8n Deep Dives',
+            title: 'Nick Saraev: n8n Deep Dives',
             type: 'youtube',
             url: 'https://www.youtube.com/@nicksaraev',
             completed: false,
@@ -193,7 +193,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-1-2-1',
-            title: 'What Are Webhooks? — Zapier Blog',
+            title: 'What Are Webhooks?: Zapier Blog',
             type: 'article',
             url: 'https://zapier.com/blog/what-are-webhooks/',
             completed: false,
@@ -204,7 +204,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-1-2-2',
-            title: 'HTTP Overview — MDN Web Docs',
+            title: 'HTTP Overview: MDN Web Docs',
             type: 'docs',
             url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview',
             completed: false,
@@ -268,7 +268,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-1-3-3',
-            title: 'Learn Prompting — Open Source Guide',
+            title: 'Learn Prompting: Open Source Guide',
             type: 'course',
             url: 'https://learnprompting.org',
             completed: false,
@@ -286,7 +286,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-1-4-1',
-            title: 'Andrej Karpathy — Intro to Large Language Models',
+            title: 'Andrej Karpathy: Intro to Large Language Models',
             type: 'youtube',
             url: 'https://www.youtube.com/@AndrejKarpathy',
             completed: false,
@@ -297,7 +297,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-1-4-2',
-            title: 'Simon Willison\'s Weblog — LLM Explainers',
+            title: 'Simon Willison\'s Weblog: LLM Explainers',
             type: 'article',
             url: 'https://simonwillison.net',
             completed: false,
@@ -358,7 +358,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-2-2-1',
-            title: 'Building Effective Agents — Anthropic Research',
+            title: 'Building Effective Agents: Anthropic Research',
             type: 'article',
             url: 'https://anthropic.com/research/building-effective-agents',
             completed: false,
@@ -389,7 +389,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-2-3-2',
-            title: 'Nate Herk — n8n Error Handling Tutorials',
+            title: 'Nate Herk: n8n Error Handling Tutorials',
             type: 'youtube',
             url: 'https://www.youtube.com/@NateHerk',
             completed: false,
@@ -459,7 +459,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-3-1-1',
-            title: 'Apify — Web Scraping & Data Extraction',
+            title: 'Apify: Web Scraping & Data Extraction',
             type: 'docs',
             url: 'https://apify.com',
             completed: false,
@@ -470,7 +470,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-3-1-2',
-            title: 'Clay — Data Enrichment Platform',
+            title: 'Clay: Data Enrichment Platform',
             type: 'docs',
             url: 'https://clay.com',
             completed: false,
@@ -492,7 +492,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-3-1-4',
-            title: 'Hunter.io — Email Finder',
+            title: 'Hunter.io: Email Finder',
             type: 'docs',
             url: 'https://hunter.io',
             completed: false,
@@ -510,7 +510,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-3-2-1',
-            title: 'Instantly.ai — Cold Email Platform',
+            title: 'Instantly.ai: Cold Email Platform',
             type: 'docs',
             url: 'https://instantly.ai',
             completed: false,
@@ -521,7 +521,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-3-2-2',
-            title: 'Smartlead.ai — Outreach Automation',
+            title: 'Smartlead.ai: Outreach Automation',
             type: 'docs',
             url: 'https://smartlead.ai',
             completed: false,
@@ -561,7 +561,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-3-3-1',
-            title: 'Blotato — AI Social Media Automation',
+            title: 'Blotato: AI Social Media Automation',
             type: 'docs',
             url: 'https://blotato.com',
             completed: false,
@@ -583,7 +583,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-3-3-3',
-            title: 'Fireflies.ai — Meeting Transcription API',
+            title: 'Fireflies.ai: Meeting Transcription API',
             type: 'docs',
             url: 'https://docs.fireflies.ai',
             completed: false,
@@ -594,7 +594,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-3-3-4',
-            title: 'OpenAI Whisper — Open Source Transcription',
+            title: 'OpenAI Whisper: Open Source Transcription',
             type: 'github',
             url: 'https://github.com/openai/whisper',
             completed: false,
@@ -623,7 +623,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-3-4-2',
-            title: 'LlamaIndex — RAG Framework Docs',
+            title: 'LlamaIndex: RAG Framework Docs',
             type: 'docs',
             url: 'https://docs.llamaindex.ai',
             completed: false,
@@ -665,7 +665,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-4-1-1',
-            title: 'Building Effective Agents — Anthropic Research',
+            title: 'Building Effective Agents: Anthropic Research',
             type: 'article',
             url: 'https://anthropic.com/research/building-effective-agents',
             completed: false,
@@ -676,7 +676,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-4-1-2',
-            title: 'OpenAI — A Practical Guide to Building Agents (PDF)',
+            title: 'OpenAI: A Practical Guide to Building Agents (PDF)',
             type: 'docs',
             url: 'https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf',
             completed: false,
@@ -720,7 +720,7 @@ export const mockMonths: Month[] = [
       {
         id: 'week-4-3',
         weekNumber: 3,
-        title: 'Dev Path — LangChain & Multi-Agent Frameworks',
+        title: 'Dev Path: LangChain & Multi-Agent Frameworks',
         items: [
           {
             id: 'item-4-3-1',
@@ -795,7 +795,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-5-1-1',
-            title: 'Railway — App Deployment Platform',
+            title: 'Railway: App Deployment Platform',
             type: 'docs',
             url: 'https://railway.app',
             completed: false,
@@ -807,7 +807,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-5-1-2',
-            title: 'Render — Cloud Hosting Platform',
+            title: 'Render: Cloud Hosting Platform',
             type: 'docs',
             url: 'https://render.com',
             completed: false,
@@ -818,7 +818,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-5-1-3',
-            title: 'n8n Cloud — Managed Hosting',
+            title: 'n8n Cloud: Managed Hosting',
             type: 'docs',
             url: 'https://n8n.io/cloud',
             completed: false,
@@ -847,7 +847,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-5-2-2',
-            title: 'Better Stack — Log Management & Uptime',
+            title: 'Better Stack: Log Management & Uptime',
             type: 'docs',
             url: 'https://betterstack.com',
             completed: false,
@@ -859,7 +859,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-5-2-3',
-            title: 'Langfuse — LLM Observability',
+            title: 'Langfuse: LLM Observability',
             type: 'docs',
             url: 'https://langfuse.com',
             completed: false,
@@ -877,7 +877,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-5-3-1',
-            title: 'OWASP LLM Top 10 — Security Risks',
+            title: 'OWASP LLM Top 10: Security Risks',
             type: 'docs',
             url: 'https://genai.owasp.org/llm-top-10/',
             completed: false,
@@ -906,7 +906,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-5-4-1',
-            title: 'Loom — Async Video Documentation',
+            title: 'Loom: Async Video Documentation',
             type: 'docs',
             url: 'https://loom.com',
             completed: false,
@@ -917,7 +917,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-5-4-2',
-            title: 'n8n Sticky Notes — In-Workflow Docs',
+            title: 'n8n Sticky Notes: In-Workflow Docs',
             type: 'docs',
             url: 'https://docs.n8n.io/workflows/sticky-notes/',
             completed: false,
@@ -928,7 +928,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-5-4-3',
-            title: 'Notion — Client Handoff Template',
+            title: 'Notion: Client Handoff Template',
             type: 'docs',
             url: 'https://notion.so/templates',
             completed: false,
@@ -955,11 +955,11 @@ export const mockMonths: Month[] = [
       {
         id: 'week-6-1',
         weekNumber: 1,
-        title: 'Freelance Path — Platforms & Positioning',
+        title: 'Freelance Path: Platforms & Positioning',
         items: [
           {
             id: 'item-6-1-1',
-            title: 'Upwork — Freelance Marketplace',
+            title: 'Upwork: Freelance Marketplace',
             type: 'article',
             url: 'https://upwork.com',
             completed: false,
@@ -971,7 +971,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-6-1-2',
-            title: 'Fiverr — Gig-Based Freelancing',
+            title: 'Fiverr: Gig-Based Freelancing',
             type: 'article',
             url: 'https://fiverr.com',
             completed: false,
@@ -982,7 +982,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-6-1-3',
-            title: 'Contra — Freelance Without Fees',
+            title: 'Contra: Freelance Without Fees',
             type: 'article',
             url: 'https://contra.com',
             completed: false,
@@ -1040,7 +1040,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-6-3-1',
-            title: 'Retool — Internal Tools Builder',
+            title: 'Retool: Internal Tools Builder',
             type: 'docs',
             url: 'https://retool.com',
             completed: false,
@@ -1051,7 +1051,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-6-3-2',
-            title: 'Streamlit — Python Data App Builder',
+            title: 'Streamlit: Python Data App Builder',
             type: 'docs',
             url: 'https://streamlit.io',
             completed: false,
@@ -1062,7 +1062,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-6-3-3',
-            title: 'Budibase — Open Source Low-Code Platform',
+            title: 'Budibase: Open Source Low-Code Platform',
             type: 'docs',
             url: 'https://budibase.com',
             completed: false,
@@ -1080,7 +1080,7 @@ export const mockMonths: Month[] = [
         items: [
           {
             id: 'item-6-4-1',
-            title: 'The E-Myth Revisited — Michael Gerber',
+            title: 'The E-Myth Revisited: Michael Gerber',
             type: 'article',
             url: 'https://www.amazon.com/E-Myth-Revisited-Small-Businesses-About/dp/0887307280',
             completed: false,
@@ -1091,7 +1091,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-6-4-2',
-            title: 'Built to Sell — John Warrillow',
+            title: 'Built to Sell: John Warrillow',
             type: 'article',
             url: 'https://www.amazon.com/Built-Sell-Creating-Business-Without/dp/1591845823',
             completed: false,
@@ -1102,7 +1102,7 @@ export const mockMonths: Month[] = [
           },
           {
             id: 'item-6-4-3',
-            title: 'OnlineJobs.ph — Hiring Virtual Assistants',
+            title: 'OnlineJobs.ph: Hiring Virtual Assistants',
             type: 'article',
             url: 'https://onlinejobs.ph',
             completed: false,
