@@ -1,10 +1,10 @@
-import Link from "next/link";
-import { mockMonths } from "@/lib/mock-data";
-import { Ring } from "@/components/ui/ring";
-import { Play, ChevronRight, Plus } from "lucide-react";
-import { fetchStreak } from "@/actions/streak";
-import { fetchProgress } from "@/actions/progress";
-import { auth } from "@/auth";
+import { fetchProgress } from '@/actions/progress';
+import { fetchStreak } from '@/actions/streak';
+import { auth } from '@/auth';
+import { Ring } from '@/components/ui/ring';
+import { mockMonths } from '@/lib/mock-data';
+import { ChevronRight, Play, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 function countAllTasks() {
   let done = 0;
@@ -32,22 +32,54 @@ export default async function DashboardPage() {
   const { done, total, monthsStarted } = countAllTasks();
 
   const session = await auth();
-  const [streak, progress] = await Promise.all([fetchStreak(), fetchProgress()]);
+  const [streak, progress] = await Promise.all([
+    fetchStreak(),
+    fetchProgress(),
+  ]);
 
-  const completedItemCount = Object.values(progress.completedItems).filter(Boolean).length;
-  const totalItemCount = mockMonths.reduce((acc, m) => acc + m.weeks.reduce((a, w) => a + w.items.length, 0), 0);
-  const overallProgress = totalItemCount > 0 ? Math.round((completedItemCount / totalItemCount) * 100) : 0;
+  const completedItemCount = Object.values(progress.completedItems).filter(
+    Boolean,
+  ).length;
+  const totalItemCount = mockMonths.reduce(
+    (acc, m) => acc + m.weeks.reduce((a, w) => a + w.items.length, 0),
+    0,
+  );
+  const overallProgress =
+    totalItemCount > 0
+      ? Math.round((completedItemCount / totalItemCount) * 100)
+      : 0;
 
   const now = new Date();
   const hour = now.getHours();
   const timeGreeting =
-    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const dayNames = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
   const dayName = dayNames[now.getDay()];
   const monthName = monthNames[now.getMonth()];
   const dateNum = now.getDate();
-  const userName = session?.user?.name ?? "there";
+  const userName = session?.user?.name ?? 'there';
 
   return (
     <>
@@ -55,7 +87,9 @@ export default async function DashboardPage() {
       <div className="flex items-end justify-between gap-4 mb-7">
         <div className="flex flex-col gap-2.5 min-w-0">
           <span className="text-zen-text-3 text-[13px]">
-            {timeGreeting}, <em className="font-serif italic text-zen-text-2">{userName}</em>. Breathe in — today is {dayName}, {monthName} {dateNum}.
+            {timeGreeting},{' '}
+            <em className="font-serif italic text-zen-text-2">{userName}</em>.
+            Breathe in — today is {dayName}, {monthName} {dateNum}.
           </span>
           <h1 className="font-serif text-[36px] leading-tight tracking-tight m-0">
             Where you are on the path.
@@ -80,7 +114,15 @@ export default async function DashboardPage() {
           value={`${overallProgress}`}
           suffix="%"
           sub="On track"
-          ring={<Ring pct={overallProgress} size={80} strokeWidth={5} label={`${overallProgress}`} sublabel="pct" />}
+          ring={
+            <Ring
+              pct={overallProgress}
+              size={80}
+              strokeWidth={5}
+              label={`${overallProgress}`}
+              sublabel="pct"
+            />
+          }
         />
         <StatCard
           label="Tasks Completed"
@@ -98,7 +140,11 @@ export default async function DashboardPage() {
           label="Current Streak"
           value={`${streak.count}`}
           suffix="days"
-          sub={streak.personalBest > 0 ? `Personal best: ${streak.personalBest}d` : "Start your streak!"}
+          sub={
+            streak.personalBest > 0
+              ? `Personal best: ${streak.personalBest}d`
+              : 'Start your streak!'
+          }
         />
       </div>
 
@@ -128,18 +174,22 @@ function StatCard({
 }) {
   return (
     <div className="p-5 rounded-[14px] border border-zen-line bg-zen-surface relative overflow-hidden">
-      <div className="text-zen-text-4 text-[11.5px] tracking-[0.14em] uppercase">{label}</div>
+      <div className="text-zen-text-4 text-[11.5px] tracking-[0.14em] uppercase">
+        {label}
+      </div>
       <div className="mt-3 font-serif text-[44px] leading-none tracking-tight">
         {value}
-        <span className="font-mono text-base text-zen-text-3 ml-1 tracking-normal">{suffix}</span>
+        <span className="font-mono text-base text-zen-text-3 ml-1 tracking-normal">
+          {suffix}
+        </span>
       </div>
       <div className="mt-2.5 text-zen-text-3 text-[12.5px] flex items-center gap-2">
         {sub}
-        {delta && <span className="text-jade font-mono text-[11.5px]">{delta}</span>}
+        {delta && (
+          <span className="text-jade font-mono text-[11.5px]">{delta}</span>
+        )}
       </div>
-      {ring && (
-        <div className="absolute right-4 top-4 opacity-80">{ring}</div>
-      )}
+      {ring && <div className="absolute right-4 top-4 opacity-80">{ring}</div>}
     </div>
   );
 }
@@ -186,20 +236,30 @@ function RoadmapTable() {
               key={month.id}
               href={`/dashboard/month/${month.id}`}
               className={`grid grid-cols-[48px_1fr_160px_120px_28px] gap-4 items-center px-5 py-4 border-b border-zen-line text-zen-text-2 transition-colors duration-150 w-full text-left no-underline last:border-b-0
-                ${isActive ? "bg-zen-surface-2" : "hover:bg-zen-surface-2"}`}
+                ${isActive ? 'bg-zen-surface-2' : 'hover:bg-zen-surface-2'}`}
             >
-              <span className={`font-mono text-[11px] tracking-[0.04em] ${isActive ? "text-jade" : "text-zen-text-4"}`}>
+              <span
+                className={`font-mono text-[11px] tracking-[0.04em] ${isActive ? 'text-jade' : 'text-zen-text-4'}`}
+              >
                 M{month.monthNumber}
               </span>
               <div className="flex flex-col gap-1 min-w-0">
-                <b className="font-medium text-zen-text text-sm">{month.title}</b>
-                <span className="text-zen-text-4 text-xs truncate">{month.goal}</span>
+                <b className="font-medium text-zen-text text-sm">
+                  {month.title}
+                </b>
+                <span className="text-zen-text-4 text-xs truncate">
+                  {month.goal}
+                </span>
               </div>
               <div className="h-1 bg-zen-surface-2 rounded-full overflow-hidden">
-                <div className="block h-full bg-jade rounded-full" style={{ width: `${pct}%` }} />
+                <div
+                  className="block h-full bg-jade rounded-full"
+                  style={{ width: `${pct}%` }}
+                />
               </div>
               <span className="font-mono text-xs text-zen-text-3 text-right">
-                <b className="text-zen-text font-medium">{done}</b>/{total} tasks
+                <b className="text-zen-text font-medium">{done}</b>/{total}{' '}
+                tasks
               </span>
               <span className="text-zen-text-5 grid place-items-center">
                 <ChevronRight size={14} />
@@ -213,7 +273,12 @@ function RoadmapTable() {
 }
 
 function TodayCard() {
-  const todayItems: { title: string; type: string; duration: string; completed: boolean }[] = [];
+  const todayItems: {
+    title: string;
+    type: string;
+    duration: string;
+    completed: boolean;
+  }[] = [];
   for (const month of mockMonths) {
     for (const week of month.weeks) {
       for (const item of week.items) {
@@ -221,7 +286,7 @@ function TodayCard() {
         todayItems.push({
           title: item.title,
           type: item.type,
-          duration: "15 min",
+          duration: '15 min',
           completed: item.completed,
         });
       }
@@ -235,8 +300,12 @@ function TodayCard() {
       {/* Today card */}
       <div className="border border-zen-line bg-zen-surface rounded-[14px] overflow-hidden">
         <div className="px-5 pt-4 pb-2 flex justify-between items-baseline">
-          <h3 className="font-serif text-[22px] font-normal tracking-tight m-0">Today</h3>
-          <span className="font-mono text-[11px] text-zen-text-4 tracking-[0.08em]">~45 MIN</span>
+          <h3 className="font-serif text-[22px] font-normal tracking-tight m-0">
+            Today
+          </h3>
+          <span className="font-mono text-[11px] text-zen-text-4 tracking-[0.08em]">
+            ~45 MIN
+          </span>
         </div>
         <div className="px-5 pb-5 flex flex-col gap-3.5">
           {todayItems.map((item, i) => (
@@ -246,19 +315,27 @@ function TodayCard() {
             >
               <span
                 className={`w-[18px] h-[18px] rounded-[6px] border-[1.5px] mt-0.5 shrink-0 relative
-                  ${item.completed
-                    ? "bg-jade border-jade after:content-[''] after:absolute after:left-[4px] after:top-[1px] after:w-[4px] after:h-[9px] after:border-solid after:border-jade-ink after:border-0 after:border-r-2 after:border-b-2 after:rotate-45"
-                    : "border-zen-line-strong"}`}
+                  ${
+                    item.completed
+                      ? "bg-jade border-jade after:content-[''] after:absolute after:left-[4px] after:top-[1px] after:w-[4px] after:h-[9px] after:border-solid after:border-jade-ink after:border-0 after:border-r-2 after:border-b-2 after:rotate-45"
+                      : 'border-zen-line-strong'
+                  }`}
               />
               <div>
-                <span className={`text-sm leading-snug ${item.completed ? "text-zen-text-4 line-through" : "text-zen-text"}`}>
+                <span
+                  className={`text-sm leading-snug ${item.completed ? 'text-zen-text-4 line-through' : 'text-zen-text'}`}
+                >
                   {item.title}
                 </span>
                 <div className="flex gap-2 mt-1 font-mono text-[11px] text-zen-text-4">
-                  <span className="px-1.5 py-[1px] rounded bg-zen-surface-2 text-zen-text-3">{item.type}</span>
+                  <span className="px-1.5 py-[1px] rounded bg-zen-surface-2 text-zen-text-3">
+                    {item.type}
+                  </span>
                 </div>
               </div>
-              <span className="font-mono text-[11px] text-zen-text-4">{item.duration}</span>
+              <span className="font-mono text-[11px] text-zen-text-4">
+                {item.duration}
+              </span>
             </div>
           ))}
         </div>
@@ -266,10 +343,12 @@ function TodayCard() {
 
       {/* Zen quote */}
       <div className="font-serif italic text-[17px] leading-relaxed text-zen-text-2 p-5 border border-zen-line rounded-[14px] bg-zen-surface relative">
-        <span className="font-serif text-[56px] leading-none text-jade/60 absolute left-3.5 top-0.5">
+        <span className="font-serif text-[56px] leading-none text-jade/60 absolute left-3.5 top-2">
           &ldquo;
         </span>
-        <p className="mt-0 mb-1.5 ml-8">The secret of getting ahead is getting started.</p>
+        <p className="mt-0 mb-1 ml-8">
+          The secret of getting ahead is getting started.
+        </p>
         <cite className="block ml-8 not-italic font-mono text-[11px] text-zen-text-4 tracking-[0.08em]">
           Mark Twain
         </cite>

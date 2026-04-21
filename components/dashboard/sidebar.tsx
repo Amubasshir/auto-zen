@@ -230,7 +230,7 @@ function LogoIcon() {
       alt="AutoZen"
       width={40}
       height={40}
-      className="block shrink-0 object-contain self-center mb-2"
+      className="block shrink-0"
     />
   );
 }
