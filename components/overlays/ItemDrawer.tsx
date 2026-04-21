@@ -86,7 +86,7 @@ export function ItemDrawer({
             </a>
           )}
           <button
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border text-[13px] transition whitespace-nowrap shrink-0
+            className={`cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border text-[13px] transition whitespace-nowrap shrink-0
               ${allDone ? "border-jade/40 text-jade bg-jade/7" : "border-zen-line text-zen-text-2 hover:bg-zen-surface"}`}
           >
             {allDone ? "✓ Completed" : "Mark Complete"}

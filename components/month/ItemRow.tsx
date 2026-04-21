@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Pencil } from "lucide-react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 import type { Item } from "@/lib/mock-data";
 
 type Props = {
@@ -105,14 +105,21 @@ export function ItemRow({ item, isDone, doneTasks, onClick, onToggle }: Props) {
       {/* col 6: empty (aligns with ResourceRow external-link slot) */}
       <span />
 
-      {/* Edit — col 7: hover only */}
-      <button
-        onClick={(e) => { e.stopPropagation(); onClick?.(); }}
-        aria-label="Open detail"
-        className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-zen-surface-2 hover:border-zen-line hover:text-zen-text transition-all duration-150"
-      >
-        <Pencil size={13} />
-      </button>
+      {/* Link — col 7: hover only, opens URL if available */}
+      {item.url ? (
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Open resource URL"
+          className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-zen-surface-2 hover:border-zen-line hover:text-zen-text transition-all duration-150"
+        >
+          <ExternalLink size={13} />
+        </a>
+      ) : (
+        <span />
+      )}
 
       {/* col 8: empty (aligns with ResourceRow trash slot) */}
       <span />
