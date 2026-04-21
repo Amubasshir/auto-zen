@@ -343,13 +343,13 @@ function TodayCard() {
 
       {/* Zen quote */}
       <div className="font-serif italic text-[17px] leading-relaxed text-zen-text-2 p-5 border border-zen-line rounded-[14px] bg-zen-surface relative">
-        <span className="font-serif text-[56px] leading-none text-jade/60 absolute left-3.5 top-2">
+        <span className="font-serif text-[56px] leading-none text-jade/60 mt-1 absolute left-3.5 top-2">
           &ldquo;
         </span>
         <p className="mt-0 mb-1 ml-8">
           The secret of getting ahead is getting started.
         </p>
-        <cite className="block ml-8 not-italic font-mono text-[11px] text-zen-text-4 tracking-[0.08em]">
+        <cite className="block ml-8  not-italic font-mono text-[11px] text-zen-text-4 tracking-[0.08em]">
           Mark Twain
         </cite>
       </div>
