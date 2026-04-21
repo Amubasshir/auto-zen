@@ -2,12 +2,8 @@
 
 import { mockMonths } from '@/lib/mock-data';
 import { buildActivityGrid } from '@/lib/streak-utils';
-import {
-  Briefcase,
-  LayoutDashboard,
-  PanelLeftClose,
-  Sun,
-} from 'lucide-react';
+import { Briefcase, LayoutDashboard, PanelLeftClose, Sun } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -55,10 +51,8 @@ export function Sidebar({
       {/* Brand */}
       {expanded ? (
         <div className="h-16 flex items-center gap-2.5 px-4 border-b border-zen-line text-zen-text shrink-0">
-          <div className="w-7 h-7 shrink-0 grid place-items-center">
-            <LogoIcon />
-          </div>
-          <span className="font-serif text-[22px] tracking-tight whitespace-nowrap">
+          <LogoIcon />
+          <span className="font-serif text-[22px] leading-none tracking-tight whitespace-nowrap">
             AutoZen
           </span>
         </div>
@@ -68,9 +62,7 @@ export function Sidebar({
           aria-label="Expand sidebar"
           className="group h-16 w-full flex items-center justify-center border-b border-zen-line text-zen-text shrink-0 hover:bg-zen-surface transition-colors duration-150 relative"
         >
-          <div className="w-7 h-7 grid place-items-center">
-            <LogoIcon />
-          </div>
+          <LogoIcon />
           <span className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-[8px] bg-zen-surface-2 border border-zen-line text-[11px] text-zen-text whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50 shadow-sm">
             Click to expand
           </span>
@@ -108,10 +100,14 @@ export function Sidebar({
           Roadmap
         </div>
       )}
-      {!expanded && <div className="mx-auto w-5 h-px bg-zen-line my-2 shrink-0" />}
+      {!expanded && (
+        <div className="mx-auto w-5 h-px bg-zen-line my-2 shrink-0" />
+      )}
 
       {/* Month cards */}
-      <div className={`flex flex-col gap-1 overflow-y-auto flex-1 min-h-0 ${expanded ? 'px-2.5' : 'px-2 items-center'}`}>
+      <div
+        className={`flex flex-col gap-1 overflow-y-auto flex-1 min-h-0 ${expanded ? 'px-2.5' : 'px-2 items-center'}`}
+      >
         {mockMonths.map((month) => {
           const { done, total, pct } = countProgress(month);
           const isActive = pathname === `/dashboard/month/${month.id}`;
@@ -131,14 +127,21 @@ export function Sidebar({
                 {month.monthNumber}
               </span>
               <div className="min-w-0">
-                <div className="text-[13px] text-zen-text truncate">{month.title}</div>
+                <div className="text-[13px] text-zen-text truncate">
+                  {month.title}
+                </div>
                 <div className="flex items-center gap-2 mt-1">
                   <div className="flex-1 h-[3px] rounded-full bg-zen-surface-3 overflow-hidden">
-                    <div className="block h-full bg-jade rounded-full" style={{ width: `${pct}%` }} />
+                    <div
+                      className="block h-full bg-jade rounded-full"
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
                 </div>
               </div>
-              <span className="font-mono text-[10.5px] text-zen-text-4 shrink-0">{done}/{total}</span>
+              <span className="font-mono text-[10.5px] text-zen-text-4 shrink-0">
+                {done}/{total}
+              </span>
             </Link>
           ) : (
             <Link
@@ -222,16 +225,13 @@ export function Sidebar({
 
 function LogoIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="text-jade">
-      <circle cx="14" cy="14" r="12" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M9 14.5l3 3 7-7"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <Image
+      src="/autozen.png"
+      alt="AutoZen"
+      width={40}
+      height={40}
+      className="block shrink-0 object-contain self-center mb-2"
+    />
   );
 }
 
