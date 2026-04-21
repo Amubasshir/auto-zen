@@ -2,13 +2,8 @@
 
 import { mockMonths } from '@/lib/mock-data';
 import { buildActivityGrid } from '@/lib/streak-utils';
-import {
-  Briefcase,
-  LayoutDashboard,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Sun,
-} from 'lucide-react';
+import { Briefcase, LayoutDashboard, PanelLeftClose, Sun } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -52,43 +47,27 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="border-r border-zen-line bg-zen-raised flex flex-col min-w-0 relative overflow-hidden">
+    <aside className="h-full border-r border-zen-line bg-zen-raised flex flex-col min-w-0 relative">
       {/* Brand */}
-      <div className="h-16 flex items-center gap-2.5 px-4 border-b border-zen-line text-zen-text shrink-0">
-        <div className="w-7 h-7 shrink-0 grid place-items-center">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 28 28"
-            fill="none"
-            className="text-jade"
-          >
-            <circle
-              cx="14"
-              cy="14"
-              r="12"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <path
-              d="M9 14.5l3 3 7-7"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+      {expanded ? (
+        <div className="h-16 flex items-center gap-2.5 px-4 border-b border-zen-line text-zen-text shrink-0">
+          <LogoIcon />
+          <span className="font-serif text-[22px] leading-none tracking-tight whitespace-nowrap">
+            AutoZen
+          </span>
         </div>
-        <span
-          className="font-serif text-[22px] tracking-tight whitespace-nowrap transition-all duration-250"
-          style={{
-            opacity: expanded ? 1 : 0,
-            transform: expanded ? 'none' : 'translateX(-4px)',
-          }}
+      ) : (
+        <button
+          onClick={onToggle}
+          aria-label="Expand sidebar"
+          className="group h-16 w-full flex items-center justify-center border-b border-zen-line text-zen-text shrink-0 hover:bg-zen-surface transition-colors duration-150 relative"
         >
-          AutoZen
-        </span>
-      </div>
+          <LogoIcon />
+          <span className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-[8px] bg-zen-surface-2 border border-zen-line text-[11px] text-zen-text whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50 shadow-sm">
+            Click to expand
+          </span>
+        </button>
+      )}
 
       {/* Nav */}
       <nav className="p-3 flex flex-col gap-0.5">
@@ -116,76 +95,68 @@ export function Sidebar({
       </nav>
 
       {/* Section label: Roadmap */}
-      <div
-        className="text-[10.5px] tracking-[0.16em] uppercase px-5 pt-4 pb-2 whitespace-nowrap transition-opacity duration-250 shrink-0"
-        style={{ color: expanded ? 'oklch(0.36 0.012 90)' : 'transparent' }}
-      >
-        {expanded ? (
-          'Roadmap'
-        ) : (
-          <span className="block w-5 h-px mx-auto bg-zen-line" />
-        )}
-      </div>
+      {expanded && (
+        <div className="text-[10.5px] tracking-[0.16em] uppercase px-5 pt-4 pb-2 whitespace-nowrap shrink-0 text-[oklch(0.36_0.012_90)]">
+          Roadmap
+        </div>
+      )}
+      {!expanded && (
+        <div className="mx-auto w-5 h-px bg-zen-line my-2 shrink-0" />
+      )}
 
       {/* Month cards */}
-      <div className="px-2.5 flex flex-col gap-1 overflow-y-auto flex-1 min-h-0">
+      <div
+        className={`flex flex-col gap-1 overflow-y-auto flex-1 min-h-0 ${expanded ? 'px-2.5' : 'px-2 items-center'}`}
+      >
         {mockMonths.map((month) => {
           const { done, total, pct } = countProgress(month);
           const isActive = pathname === `/dashboard/month/${month.id}`;
           const isDone = pct === 100;
 
-          return (
+          return expanded ? (
             <Link
               key={month.id}
               href={`/dashboard/month/${month.id}`}
-              className={`grid items-center rounded-[10px] transition-colors duration-150 w-full text-left no-underline
-                ${
-                  expanded
-                    ? 'grid-cols-[28px_1fr_auto] gap-2.5 px-3 py-2'
-                    : 'grid-cols-1 justify-items-center p-2'
-                }
-                ${
-                  isActive
-                    ? 'bg-zen-surface-2 text-zen-text'
-                    : 'text-zen-text-3 hover:bg-zen-surface hover:text-zen-text'
-                }`}
+              className={`grid grid-cols-[28px_1fr_auto] items-center gap-2.5 px-3 py-2 rounded-[10px] transition-colors duration-150 w-full text-left no-underline
+                ${isActive ? 'bg-zen-surface-2 text-zen-text' : 'text-zen-text-3 hover:bg-zen-surface hover:text-zen-text'}`}
             >
               <span
                 className={`w-6 h-6 rounded-lg grid place-items-center font-mono text-[11px] border shrink-0
-                  ${
-                    isActive || isDone
-                      ? 'bg-jade/14 text-jade border-jade/34'
-                      : 'bg-zen-surface-2 text-zen-text-3 border-zen-line'
-                  }`}
+                  ${isActive || isDone ? 'bg-jade/14 text-jade border-jade/34' : 'bg-zen-surface-2 text-zen-text-3 border-zen-line'}`}
               >
                 {month.monthNumber}
               </span>
-              {expanded && (
-                <div className="min-w-0">
-                  <div className="text-[13px] text-zen-text truncate">
-                    {month.title}
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="flex-1 h-[3px] rounded-full bg-zen-surface-3 overflow-hidden">
-                      <div
-                        className="block h-full bg-jade rounded-full"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
+              <div className="min-w-0">
+                <div className="text-[13px] text-zen-text truncate">
+                  {month.title}
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="flex-1 h-[3px] rounded-full bg-zen-surface-3 overflow-hidden">
+                    <div
+                      className="block h-full bg-jade rounded-full"
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
                 </div>
-              )}
-              {expanded && (
-                <span className="font-mono text-[10.5px] text-zen-text-4 shrink-0">
-                  {done}/{total}
-                </span>
-              )}
+              </div>
+              <span className="font-mono text-[10.5px] text-zen-text-4 shrink-0">
+                {done}/{total}
+              </span>
+            </Link>
+          ) : (
+            <Link
+              key={month.id}
+              href={`/dashboard/month/${month.id}`}
+              className={`w-8 h-8 rounded-lg grid place-items-center font-mono text-[11px] border transition-colors duration-150 no-underline
+                ${isActive || isDone ? 'bg-jade/14 text-jade border-jade/34' : 'bg-zen-surface-2 text-zen-text-3 border-zen-line hover:border-jade/34 hover:text-jade hover:bg-jade/14'}`}
+            >
+              {month.monthNumber}
             </Link>
           );
         })}
       </div>
 
-      {/* Path filter (expanded only) */}
+      {/* Path filter — expanded only */}
       {expanded && (
         <div className="px-4 pb-3 pt-3 border-t border-zen-line shrink-0">
           <h4 className="text-[11px] font-medium tracking-[0.02em] text-zen-text mb-2.5">
@@ -206,7 +177,7 @@ export function Sidebar({
         </div>
       )}
 
-      {/* Activity grid (expanded only) */}
+      {/* Activity grid — expanded only */}
       {expanded && (
         <div className="px-4 pb-4 border-t border-zen-line shrink-0">
           <div className="flex justify-between items-baseline text-[11px] tracking-[0.12em] uppercase text-zen-text-5 mb-2.5 pt-3">
@@ -238,15 +209,29 @@ export function Sidebar({
         </div>
       )}
 
-      {/* Toggle button */}
-      <button
-        onClick={onToggle}
-        aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
-        className="absolute -right-2.5 top-[52px] w-5 h-5 rounded-full bg-zen-surface-2 border border-zen-line-strong grid place-items-center text-zen-text-3 z-30 hover:text-zen-text transition-colors"
-      >
-        {expanded ? <PanelLeftClose size={11} /> : <PanelLeftOpen size={11} />}
-      </button>
+      {/* Collapse button — expanded only, overflows right edge */}
+      {expanded && (
+        <button
+          onClick={onToggle}
+          aria-label="Collapse sidebar"
+          className="absolute -right-2.5 top-[52px] w-5 h-5 rounded-full bg-zen-surface-2 border border-zen-line-strong grid place-items-center text-zen-text-3 z-30 hover:text-zen-text transition-colors"
+        >
+          <PanelLeftClose size={11} />
+        </button>
+      )}
     </aside>
+  );
+}
+
+function LogoIcon() {
+  return (
+    <Image
+      src="/autozen.png"
+      alt="AutoZen"
+      width={40}
+      height={40}
+      className="block shrink-0 mb-2"
+    />
   );
 }
 
@@ -266,27 +251,15 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] whitespace-nowrap transition-colors duration-150 w-full relative no-underline
-        ${
-          active
-            ? 'bg-zen-surface-2 text-zen-text'
-            : 'text-zen-text-3 hover:bg-zen-surface hover:text-zen-text'
-        }`}
+      className={`flex items-center gap-3 rounded-[10px] whitespace-nowrap transition-colors duration-150 w-full relative no-underline
+        ${expanded ? 'px-3 py-2.5' : 'justify-center p-2.5'}
+        ${active ? 'bg-zen-surface-2 text-zen-text' : 'text-zen-text-3 hover:bg-zen-surface hover:text-zen-text'}`}
     >
-      {active && (
+      {active && expanded && (
         <span className="absolute -left-2.5 top-3.5 bottom-3.5 w-0.5 bg-jade rounded-sm" />
       )}
       {icon}
-      <span
-        className="transition-all duration-250 text-sm"
-        style={{
-          opacity: expanded ? 1 : 0,
-          transform: expanded ? 'none' : 'translateX(-4px)',
-          pointerEvents: expanded ? 'auto' : 'none',
-        }}
-      >
-        {label}
-      </span>
+      {expanded && <span className="text-sm">{label}</span>}
     </Link>
   );
 }

@@ -31,8 +31,8 @@ export async function saveNote(
   }
 }
 
-export async function fetchNotesForWeeks(
-  weekIds: string[],
+export async function fetchNotes(
+  keys: string[],
 ): Promise<Record<string, string>> {
   const session = await auth();
   if (!session?.user?.id) return {};
@@ -42,7 +42,7 @@ export async function fetchNotesForWeeks(
 
     const docs = await Note.find({
       userId: session.user.id,
-      weekId: { $in: weekIds },
+      weekId: { $in: keys },
     }).lean();
 
     return Object.fromEntries(docs.map((d) => [d.weekId, d.content ?? ""]));

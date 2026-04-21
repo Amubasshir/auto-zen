@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ExternalLink, Pencil, Trash2 } from "lucide-react";
-import { deleteResource } from "@/actions/resources";
+import { Check, ChevronRight, ExternalLink, Pencil, Trash2 } from "lucide-react";
+import { deleteResource, toggleResourceCompleted } from "@/actions/resources";
 import type { ClientResource } from "@/lib/validators/resource";
 
 type Props = {
   resource: ClientResource;
+  onOpen: (resource: ClientResource) => void;
   onEdit: (resource: ClientResource) => void;
   onDeleted: (id: string) => void;
+  onToggled: (id: string, completed: boolean) => void;
 };
 
 const TYPE_META: Record<string, { label: string; className: string }> = {
@@ -19,17 +21,30 @@ const TYPE_META: Record<string, { label: string; className: string }> = {
   github: { label: "GitHub", className: "text-zen-text-2 border-zen-line" },
 };
 
-export function ResourceRow({ resource, onEdit, onDeleted }: Props) {
+export function ResourceRow({ resource, onOpen, onEdit, onDeleted, onToggled }: Props) {
   const [, startTransition] = useTransition();
   const [deleting, setDeleting] = useState(false);
+  const [completed, setCompleted] = useState(resource.completed);
+  const [toggling, setToggling] = useState(false);
 
   const typeMeta = TYPE_META[resource.type] ?? {
     label: resource.type,
     className: "text-zen-text-2 border-zen-line",
   };
 
+  function handleToggle() {
+    const next = !completed;
+    setCompleted(next);
+    setToggling(true);
+    startTransition(async () => {
+      await toggleResourceCompleted(resource.id, next);
+      onToggled(resource.id, next);
+      setToggling(false);
+    });
+  }
+
   function handleDelete() {
-    if (!confirm(`Delete "${resource.title}"?`)) return;
+    if (!window.confirm(`Delete "${resource.title}"?`)) return;
     setDeleting(true);
     startTransition(async () => {
       const result = await deleteResource(resource.id);
@@ -43,56 +58,89 @@ export function ResourceRow({ resource, onEdit, onDeleted }: Props) {
 
   return (
     <div
-      className={`group grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 items-center px-5 py-3 border-b border-dashed border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface ${deleting ? "opacity-40 pointer-events-none" : ""}`}
+      onClick={() => onOpen(resource)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onOpen(resource)}
+      className={`group grid grid-cols-[22px_1fr_90px_76px_48px_28px_28px_28px_28px] gap-4 items-center px-5 py-3.25 border-b border-dashed border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface cursor-pointer ${deleting ? "opacity-40 pointer-events-none" : ""}`}
     >
+      {/* Checkbox — same style as ItemRow */}
+      <button
+        onClick={(e) => { e.stopPropagation(); handleToggle(); }}
+        disabled={toggling}
+        aria-label={completed ? "Mark incomplete" : "Mark complete"}
+        className={`w-4.5 h-4.5 rounded-[6px] border-[1.5px] justify-self-center shrink-0 relative transition-all duration-150
+          ${completed
+            ? "bg-jade border-jade hover:brightness-110"
+            : "border-zen-line-strong hover:border-jade/60"}`}
+      >
+        {completed && (
+          <span className="absolute left-1 top-px w-1 h-2.25 border-solid border-jade-ink border-0 border-r-2 border-b-2 rotate-45 block" />
+        )}
+      </button>
+
       {/* Title + custom badge */}
       <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="text-sm text-zen-text-2 truncate">{resource.title}</span>
+        <span className={`text-sm truncate transition-colors duration-150 ${completed ? "line-through text-zen-text-4 decoration-zen-text-5" : "text-zen-text"}`}>
+          {resource.title}
+        </span>
         <span className="font-mono text-[10px] text-jade tracking-[0.06em] uppercase">
           Custom
         </span>
       </div>
 
-      {/* Type tag */}
-      <span className={`font-mono text-[10.5px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${typeMeta.className}`}>
+      {/* Task count — col 3 (90px) */}
+      <span className="font-mono text-[11px] text-zen-text-4 whitespace-nowrap text-right">
+        {resource.tasks.length > 0
+          ? `${(resource.completedTasks ?? []).filter(Boolean).length}/${resource.tasks.length} tasks`
+          : ""}
+      </span>
+
+      {/* Type tag — col 4 (76px) */}
+      <span className={`justify-self-center font-mono text-[10.5px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${typeMeta.className}`}>
         {typeMeta.label}
       </span>
 
-      {/* Duration */}
-      {resource.duration && (
-        <span className="font-mono text-[11px] text-zen-text-4 whitespace-nowrap">
-          {resource.duration}
-        </span>
-      )}
+      {/* Duration — col 5 (48px) */}
+      <span className="font-mono text-[11px] text-zen-text-4 text-right">
+        {resource.duration ?? ""}
+      </span>
 
-      {/* Open URL */}
+      {/* Open URL — hover only */}
       <a
         href={resource.url}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Open resource"
-        className="w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-zen-surface-2 hover:border-zen-line hover:text-zen-text transition-colors"
+        onClick={(e) => e.stopPropagation()}
+        className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-zen-surface-2 hover:border-zen-line hover:text-zen-text transition-all duration-150"
       >
         <ExternalLink size={13} />
       </a>
 
-      {/* Edit */}
+      {/* Edit — hover only */}
       <button
-        onClick={() => onEdit(resource)}
+        onClick={(e) => { e.stopPropagation(); onEdit(resource); }}
         aria-label="Edit resource"
-        className="w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-zen-surface-2 hover:border-zen-line hover:text-zen-text transition-colors"
+        className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-zen-surface-2 hover:border-zen-line hover:text-zen-text transition-all duration-150"
       >
         <Pencil size={13} />
       </button>
 
-      {/* Delete */}
+      {/* Delete — hover only */}
       <button
-        onClick={handleDelete}
+        onClick={(e) => { e.stopPropagation(); handleDelete(); }}
         aria-label="Delete resource"
-        className="w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-danger/10 hover:border-danger/40 hover:text-danger transition-colors"
+        className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-danger/10 hover:border-danger/40 hover:text-danger transition-all duration-150"
       >
         <Trash2 size={13} />
       </button>
+
+      {/* Chevron */}
+      <ChevronRight
+        size={14}
+        className="text-zen-text-5 justify-self-end group-hover:text-zen-text-3 transition-colors duration-150"
+      />
     </div>
   );
 }

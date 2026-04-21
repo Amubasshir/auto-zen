@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 import type { Item } from "@/lib/mock-data";
 
 type Props = {
@@ -61,7 +61,7 @@ export function ItemRow({ item, isDone, doneTasks, onClick, onToggle }: Props) {
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => e.key === "Enter" && onClick() : undefined}
-      className={`group grid grid-cols-[22px_1fr_auto_auto_auto_28px] gap-4 items-center px-5 py-3.25 border-b border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface
+      className={`group grid grid-cols-[22px_1fr_90px_76px_48px_28px_28px_28px_28px] gap-4 items-center px-5 py-3.25 border-b border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface
         ${onClick ? "cursor-pointer" : ""}
         ${done ? "opacity-75" : ""}`}
     >
@@ -87,22 +87,44 @@ export function ItemRow({ item, isDone, doneTasks, onClick, onToggle }: Props) {
         {item.title}
       </span>
 
-      {/* Task count */}
-      <span className="font-mono text-[11px] text-zen-text-4 whitespace-nowrap">
+      {/* Task count — col 3 (90px) */}
+      <span className="font-mono text-[11px] text-zen-text-4 whitespace-nowrap text-right">
         {doneTaskCount}/{totalTasks} tasks
       </span>
 
-      {/* Type tag */}
-      <span className={`font-mono text-[10.5px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${typeMeta.className}`}>
+      {/* Type tag — col 4 (76px) */}
+      <span className={`justify-self-center font-mono text-[10.5px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${typeMeta.className}`}>
         {typeMeta.label}
       </span>
 
-      {/* Duration */}
-      <span className="font-mono text-[11px] text-zen-text-4 min-w-12 text-right">
+      {/* Duration — col 5 (48px) */}
+      <span className="font-mono text-[11px] text-zen-text-4 text-right">
         {durLabel}
       </span>
 
-      {/* Chevron */}
+      {/* col 6: empty (aligns with ResourceRow external-link slot) */}
+      <span />
+
+      {/* Link — col 7: hover only, opens URL if available */}
+      {item.url ? (
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Open resource URL"
+          className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-[6px] grid place-items-center text-zen-text-4 border border-transparent hover:bg-zen-surface-2 hover:border-zen-line hover:text-zen-text transition-all duration-150"
+        >
+          <ExternalLink size={13} />
+        </a>
+      ) : (
+        <span />
+      )}
+
+      {/* col 8: empty (aligns with ResourceRow trash slot) */}
+      <span />
+
+      {/* Chevron — col 9 (28px) */}
       <ChevronRight
         size={14}
         className="text-zen-text-5 justify-self-end group-hover:text-zen-text-3 transition-colors duration-150"

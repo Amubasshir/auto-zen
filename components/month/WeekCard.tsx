@@ -6,6 +6,7 @@ import { ItemRow } from "./ItemRow";
 import { ResourceRow } from "./ResourceRow";
 import { NotesPanel } from "@/components/overlays/NotesPanel";
 import { ResourceForm } from "@/components/overlays/ResourceForm";
+import { ResourceDrawer } from "@/components/overlays/ResourceDrawer";
 import type { Week, Item } from "@/lib/mock-data";
 import type { ProgressState } from "@/lib/validators/progress";
 import type { ClientResource } from "@/lib/validators/resource";
@@ -13,10 +14,11 @@ import type { ClientResource } from "@/lib/validators/resource";
 type Props = {
   week: Week;
   weekIndex: number;
+  monthNumber: number;
   defaultOpen?: boolean;
   progress: ProgressState;
   resources: ClientResource[];
-  initialNoteContent?: string;
+  initialNotes?: Record<string, string>;
   onItemClick?: (item: Item) => void;
   onItemToggle?: (itemId: string, completed: boolean) => void;
   onResourcesChange?: (weekId: string, resources: ClientResource[]) => void;
@@ -42,10 +44,11 @@ function resolveTaskDoneCount(
 export function WeekCard({
   week,
   weekIndex,
+  monthNumber,
   defaultOpen = false,
   progress,
   resources,
-  initialNoteContent = "",
+  initialNotes = {},
   onItemClick,
   onItemToggle,
   onResourcesChange,
@@ -54,6 +57,7 @@ export function WeekCard({
   const [showNotes, setShowNotes] = useState(false);
   const [showResourceForm, setShowResourceForm] = useState(false);
   const [editingResource, setEditingResource] = useState<ClientResource | null>(null);
+  const [drawerResource, setDrawerResource] = useState<ClientResource | null>(null);
 
   const totalTasks = week.items.reduce((s, item) => s + item.tasks.length, 0);
   const doneTasks = week.items.reduce(
@@ -87,6 +91,16 @@ export function WeekCard({
 
   function handleResourceDeleted(id: string) {
     onResourcesChange?.(week.id, resources.filter((r) => r.id !== id));
+  }
+
+  function handleResourceToggled(id: string, completed: boolean) {
+    onResourcesChange?.(week.id, resources.map((r) => r.id === id ? { ...r, completed } : r));
+    setDrawerResource((prev) => prev?.id === id ? { ...prev, completed } : prev);
+  }
+
+  function handleSubtasksChanged(id: string, completedTasks: boolean[]) {
+    onResourcesChange?.(week.id, resources.map((r) => r.id === id ? { ...r, completedTasks } : r));
+    setDrawerResource((prev) => prev?.id === id ? { ...prev, completedTasks } : prev);
   }
 
   return (
@@ -171,8 +185,10 @@ export function WeekCard({
                   <ResourceRow
                     key={resource.id}
                     resource={resource}
+                    onOpen={setDrawerResource}
                     onEdit={openEditForm}
                     onDeleted={handleResourceDeleted}
+                    onToggled={handleResourceToggled}
                   />
                 ))}
               </div>
@@ -181,7 +197,7 @@ export function WeekCard({
             {/* Inline notes panel */}
             {showNotes && (
               <div className="px-5 py-4 border-t border-zen-line">
-                <NotesPanel weekId={week.id} initialContent={initialNoteContent} />
+                <NotesPanel noteKey={week.id} initialContent={initialNotes[week.id] ?? ""} />
               </div>
             )}
           </div>
@@ -195,6 +211,19 @@ export function WeekCard({
         editing={editingResource}
         onClose={() => setShowResourceForm(false)}
         onSaved={handleResourceSaved}
+      />
+
+      <ResourceDrawer
+        open={drawerResource !== null}
+        onClose={() => setDrawerResource(null)}
+        resource={drawerResource}
+        weekId={week.id}
+        weekIndex={weekIndex}
+        monthNumber={monthNumber}
+        onEdit={(r) => { setDrawerResource(null); openEditForm(r); }}
+        onToggled={handleResourceToggled}
+        onSubtasksChanged={handleSubtasksChanged}
+        initialNoteContent={drawerResource ? (initialNotes[`resource-${drawerResource.id}`] ?? "") : ""}
       />
     </>
   );
