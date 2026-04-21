@@ -18,7 +18,7 @@ type Props = {
   defaultOpen?: boolean;
   progress: ProgressState;
   resources: ClientResource[];
-  initialNoteContent?: string;
+  initialNotes?: Record<string, string>;
   onItemClick?: (item: Item) => void;
   onItemToggle?: (itemId: string, completed: boolean) => void;
   onResourcesChange?: (weekId: string, resources: ClientResource[]) => void;
@@ -48,7 +48,7 @@ export function WeekCard({
   defaultOpen = false,
   progress,
   resources,
-  initialNoteContent = "",
+  initialNotes = {},
   onItemClick,
   onItemToggle,
   onResourcesChange,
@@ -96,6 +96,11 @@ export function WeekCard({
   function handleResourceToggled(id: string, completed: boolean) {
     onResourcesChange?.(week.id, resources.map((r) => r.id === id ? { ...r, completed } : r));
     setDrawerResource((prev) => prev?.id === id ? { ...prev, completed } : prev);
+  }
+
+  function handleSubtasksChanged(id: string, completedTasks: boolean[]) {
+    onResourcesChange?.(week.id, resources.map((r) => r.id === id ? { ...r, completedTasks } : r));
+    setDrawerResource((prev) => prev?.id === id ? { ...prev, completedTasks } : prev);
   }
 
   return (
@@ -192,7 +197,7 @@ export function WeekCard({
             {/* Inline notes panel */}
             {showNotes && (
               <div className="px-5 py-4 border-t border-zen-line">
-                <NotesPanel weekId={week.id} initialContent={initialNoteContent} />
+                <NotesPanel noteKey={week.id} initialContent={initialNotes[week.id] ?? ""} />
               </div>
             )}
           </div>
@@ -217,6 +222,8 @@ export function WeekCard({
         monthNumber={monthNumber}
         onEdit={(r) => { setDrawerResource(null); openEditForm(r); }}
         onToggled={handleResourceToggled}
+        onSubtasksChanged={handleSubtasksChanged}
+        initialNoteContent={drawerResource ? (initialNotes[`resource-${drawerResource.id}`] ?? "") : ""}
       />
     </>
   );

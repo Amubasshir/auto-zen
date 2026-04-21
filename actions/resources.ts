@@ -36,6 +36,7 @@ export async function fetchResourcesForWeeks(
       difficulty: d.difficulty,
       duration: d.duration,
       tasks: d.tasks ?? [],
+      completedTasks: d.completedTasks ?? [],
       completed: d.completed ?? false,
       createdAt: d.createdAt?.toISOString() ?? new Date().toISOString(),
     }));
@@ -75,6 +76,7 @@ export async function createResource(
         difficulty: doc.difficulty,
         duration: doc.duration,
         tasks: doc.tasks ?? [],
+        completedTasks: doc.completedTasks ?? [],
         completed: doc.completed ?? false,
         createdAt: doc.createdAt?.toISOString() ?? new Date().toISOString(),
       },
@@ -156,5 +158,50 @@ export async function deleteResource(
     return { success: true };
   } catch {
     return { success: false, error: "Failed to delete resource" };
+  }
+}
+
+export async function toggleResourceSubtask(
+  id: string,
+  index: number,
+  completed: boolean,
+): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+  try {
+    await dbConnect();
+    const doc = await CustomResource.findOneAndUpdate(
+      { _id: id, userId: session.user.id },
+      { $set: { [`completedTasks.${index}`]: completed } },
+      { new: true },
+    );
+    if (!doc) return { success: false, error: "Resource not found" };
+    revalidatePath("/dashboard", "layout");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to update subtask" };
+  }
+}
+
+export async function setAllResourceSubtasks(
+  id: string,
+  completedTasks: boolean[],
+): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+  try {
+    await dbConnect();
+    const doc = await CustomResource.findOneAndUpdate(
+      { _id: id, userId: session.user.id },
+      { $set: { completedTasks } },
+      { new: true },
+    );
+    if (!doc) return { success: false, error: "Resource not found" };
+    revalidatePath("/dashboard", "layout");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to update subtasks" };
   }
 }

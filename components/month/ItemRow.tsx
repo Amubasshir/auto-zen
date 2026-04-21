@@ -61,7 +61,7 @@ export function ItemRow({ item, isDone, doneTasks, onClick, onToggle }: Props) {
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? (e) => e.key === "Enter" && onClick() : undefined}
-      className={`group grid grid-cols-[22px_1fr_auto_auto_auto_auto_28px] gap-4 items-center px-5 py-3.25 border-b border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface
+      className={`group grid grid-cols-[22px_1fr_90px_76px_48px_28px_28px_28px_28px] gap-4 items-center px-5 py-3.25 border-b border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface
         ${onClick ? "cursor-pointer" : ""}
         ${done ? "opacity-75" : ""}`}
     >
@@ -87,22 +87,25 @@ export function ItemRow({ item, isDone, doneTasks, onClick, onToggle }: Props) {
         {item.title}
       </span>
 
-      {/* Task count */}
-      <span className="font-mono text-[11px] text-zen-text-4 whitespace-nowrap">
+      {/* Task count — col 3 (90px) */}
+      <span className="font-mono text-[11px] text-zen-text-4 whitespace-nowrap text-right">
         {doneTaskCount}/{totalTasks} tasks
       </span>
 
-      {/* Type tag */}
-      <span className={`font-mono text-[10.5px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${typeMeta.className}`}>
+      {/* Type tag — col 4 (76px) */}
+      <span className={`justify-self-center font-mono text-[10.5px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${typeMeta.className}`}>
         {typeMeta.label}
       </span>
 
-      {/* Duration */}
-      <span className="font-mono text-[11px] text-zen-text-4 min-w-12 text-right">
+      {/* Duration — col 5 (48px) */}
+      <span className="font-mono text-[11px] text-zen-text-4 text-right">
         {durLabel}
       </span>
 
-      {/* Edit — hover only */}
+      {/* col 6: empty (aligns with ResourceRow external-link slot) */}
+      <span />
+
+      {/* Edit — col 7: hover only */}
       <button
         onClick={(e) => { e.stopPropagation(); onClick?.(); }}
         aria-label="Open detail"
@@ -111,7 +114,10 @@ export function ItemRow({ item, isDone, doneTasks, onClick, onToggle }: Props) {
         <Pencil size={13} />
       </button>
 
-      {/* Chevron */}
+      {/* col 8: empty (aligns with ResourceRow trash slot) */}
+      <span />
+
+      {/* Chevron — col 9 (28px) */}
       <ChevronRight
         size={14}
         className="text-zen-text-5 justify-self-end group-hover:text-zen-text-3 transition-colors duration-150"

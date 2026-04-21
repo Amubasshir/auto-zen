@@ -15,6 +15,7 @@ type Props = {
   completedTasks?: Record<string, boolean>;
   /** Called when a task checkbox is toggled */
   onTaskToggle?: (itemId: string, taskId: string, completed: boolean) => void;
+  initialNoteContent?: string;
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -41,6 +42,7 @@ export function ItemDrawer({
   month,
   completedTasks = {},
   onTaskToggle,
+  initialNoteContent = "",
 }: Props) {
   if (!item || !week || !month) return null;
 
@@ -77,14 +79,14 @@ export function ItemDrawer({
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-jade text-jade-ink text-[13px] font-medium no-underline hover:brightness-110 transition"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-jade text-jade-ink text-[13px] font-medium no-underline hover:brightness-110 transition whitespace-nowrap shrink-0"
             >
               <Play size={14} />
               Open Resource
             </a>
           )}
           <button
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border text-[13px] transition
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border text-[13px] transition whitespace-nowrap shrink-0
               ${allDone ? "border-jade/40 text-jade bg-jade/7" : "border-zen-line text-zen-text-2 hover:bg-zen-surface"}`}
           >
             {allDone ? "✓ Completed" : "Mark Complete"}
@@ -139,8 +141,8 @@ export function ItemDrawer({
       </div>
 
       {/* Notes */}
-      <p className="m-0 mb-2.5 text-[11px] tracking-[0.14em] uppercase text-zen-text-5">Week Notes</p>
-      <NotesPanel weekId={week.id} />
+      <p className="m-0 mb-2.5 text-[11px] tracking-[0.14em] uppercase text-zen-text-5">Notes</p>
+      <NotesPanel noteKey={`item-${item.id}`} initialContent={initialNoteContent} />
     </Drawer>
   );
 }

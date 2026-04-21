@@ -109,7 +109,7 @@ export function MonthPageClient({
             defaultOpen={i === 0}
             progress={progress}
             resources={resourcesByWeek[week.id] ?? []}
-            initialNoteContent={initialNotes[week.id] ?? ""}
+            initialNotes={initialNotes}
             onItemClick={(item) => setSelected({ item, week, month })}
             onItemToggle={handleItemToggle}
             onResourcesChange={handleResourcesChange}
@@ -125,6 +125,7 @@ export function MonthPageClient({
         month={selected?.month ?? null}
         completedTasks={selected ? (progress.completedTasks[selected.item.id] ?? {}) : {}}
         onTaskToggle={handleTaskToggle}
+        initialNoteContent={selected ? (initialNotes[`item-${selected.item.id}`] ?? "") : ""}
       />
     </>
   );

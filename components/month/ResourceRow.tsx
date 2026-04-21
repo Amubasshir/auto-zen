@@ -62,7 +62,7 @@ export function ResourceRow({ resource, onOpen, onEdit, onDeleted, onToggled }: 
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && onOpen(resource)}
-      className={`group grid grid-cols-[22px_1fr_auto_auto_auto_auto_auto_auto_28px] gap-4 items-center px-5 py-3.25 border-b border-dashed border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface cursor-pointer ${deleting ? "opacity-40 pointer-events-none" : ""}`}
+      className={`group grid grid-cols-[22px_1fr_90px_76px_48px_28px_28px_28px_28px] gap-4 items-center px-5 py-3.25 border-b border-dashed border-zen-line last:border-b-0 transition-colors duration-150 hover:bg-zen-surface cursor-pointer ${deleting ? "opacity-40 pointer-events-none" : ""}`}
     >
       {/* Checkbox — same style as ItemRow */}
       <button
@@ -89,18 +89,20 @@ export function ResourceRow({ resource, onOpen, onEdit, onDeleted, onToggled }: 
         </span>
       </div>
 
-      {/* Task count */}
-      <span className="font-mono text-[11px] text-zen-text-4 whitespace-nowrap">
-        {resource.tasks.length > 0 ? `${resource.tasks.length} tasks` : ""}
+      {/* Task count — col 3 (90px) */}
+      <span className="font-mono text-[11px] text-zen-text-4 whitespace-nowrap text-right">
+        {resource.tasks.length > 0
+          ? `${(resource.completedTasks ?? []).filter(Boolean).length}/${resource.tasks.length} tasks`
+          : ""}
       </span>
 
-      {/* Type tag */}
-      <span className={`font-mono text-[10.5px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${typeMeta.className}`}>
+      {/* Type tag — col 4 (76px) */}
+      <span className={`justify-self-center font-mono text-[10.5px] px-1.5 py-0.5 rounded-full border whitespace-nowrap ${typeMeta.className}`}>
         {typeMeta.label}
       </span>
 
-      {/* Duration */}
-      <span className="font-mono text-[11px] text-zen-text-4 min-w-12 text-right">
+      {/* Duration — col 5 (48px) */}
+      <span className="font-mono text-[11px] text-zen-text-4 text-right">
         {resource.duration ?? ""}
       </span>
 

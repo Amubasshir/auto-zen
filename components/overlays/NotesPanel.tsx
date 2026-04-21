@@ -5,11 +5,11 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { saveNote } from "@/actions/notes";
 
 type Props = {
-  weekId: string;
+  noteKey: string;
   initialContent?: string;
 };
 
-export function NotesPanel({ weekId, initialContent = "" }: Props) {
+export function NotesPanel({ noteKey, initialContent = "" }: Props) {
   const [content, setContent] = useState(initialContent);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [saving, setSaving] = useState(false);
@@ -31,7 +31,7 @@ export function NotesPanel({ weekId, initialContent = "" }: Props) {
     setSaving(true);
     setError("");
 
-    saveNote(weekId, debouncedContent)
+    saveNote(noteKey, debouncedContent)
       .then((result) => {
         setSaving(false);
         if (result.success) {
@@ -44,7 +44,7 @@ export function NotesPanel({ weekId, initialContent = "" }: Props) {
         setSaving(false);
         setError("Save failed");
       });
-    // weekId intentionally excluded — changing week closes the panel
+    // noteKey intentionally excluded — changing week closes the panel
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedContent]);
 
@@ -89,7 +89,7 @@ export function NotesPanel({ weekId, initialContent = "" }: Props) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write your notes for this week… ideas, blockers, wins."
-          aria-label={`Notes for week ${weekId}`}
+          aria-label={`Notes for week ${noteKey}`}
           className="w-full h-full min-h-50 resize-none bg-transparent border-none outline-none text-zen-text-2 text-[14.5px] leading-relaxed placeholder:text-zen-text-5 font-sans"
         />
       </div>
