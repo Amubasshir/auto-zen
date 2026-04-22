@@ -7,11 +7,14 @@ import { InactivityBanner } from "@/components/today/InactivityBanner";
 import { fetchStreak } from "@/actions/streak";
 import { computeDaysSince } from "@/lib/streak-utils";
 import { auth } from "@/auth";
+import { dbConnect } from "@/lib/db/connect";
+import User from "@/lib/db/models/User";
+import { filterMonthsByPath, type PathType } from "@/lib/path-filter";
 
 type CurrentItem = { item: Item; week: Week; month: Month };
 
-function findCurrentItem(): CurrentItem | null {
-  for (const month of mockMonths) {
+function findCurrentItem(months: Month[]): CurrentItem | null {
+  for (const month of months) {
     for (const week of month.weeks) {
       for (const item of week.items) {
         if (!item.completed) {
@@ -32,7 +35,15 @@ export default async function TodayPage() {
   const session = await auth();
   const streak = session?.user?.id ? await fetchStreak() : { count: 0, lastDate: "", activeDays: [] };
 
-  const current = findCurrentItem();
+  let pathType: PathType = "developer";
+  if (session?.user?.id) {
+    await dbConnect();
+    const user = await User.findById(session.user.id).select("pathType").lean();
+    if (user?.pathType) pathType = user.pathType as PathType;
+  }
+  const filtered = filterMonthsByPath(mockMonths, pathType);
+
+  const current = findCurrentItem(filtered);
   const inactiveDays = computeDaysSince(streak.lastDate);
 
   const now = new Date();
@@ -82,7 +93,7 @@ export default async function TodayPage() {
       )}
 
       {/* Pending items */}
-      <PendingGrid months={mockMonths} />
+      <PendingGrid months={filtered} />
     </>
   );
 }

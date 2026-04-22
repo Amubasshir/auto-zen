@@ -2,10 +2,13 @@
 
 import { mockMonths } from '@/lib/mock-data';
 import { buildActivityGrid } from '@/lib/streak-utils';
+import { filterMonthsByPath, type PathType } from '@/lib/path-filter';
+import { updatePathType } from '@/actions/path';
 import { Briefcase, LayoutDashboard, PanelLeftClose, Sun } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { startTransition, useTransition } from 'react';
 
 type SidebarProps = {
   expanded: boolean;
@@ -45,6 +48,14 @@ export function Sidebar({
   pathType,
 }: SidebarProps) {
   const pathname = usePathname();
+  const [, startTransition] = useTransition();
+  const filtered = filterMonthsByPath(mockMonths, pathType);
+
+  function handlePathSwitch(newPath: PathType) {
+    startTransition(async () => {
+      await updatePathType(newPath);
+    });
+  }
 
   return (
     <aside className="h-full border-r border-zen-line bg-zen-raised flex flex-col min-w-0 relative">
@@ -108,7 +119,7 @@ export function Sidebar({
       <div
         className={`flex flex-col gap-1 overflow-y-auto flex-1 min-h-0 ${expanded ? 'px-2.5' : 'px-2 items-center'}`}
       >
-        {mockMonths.map((month) => {
+        {filtered.map((month) => {
           const { done, total, pct } = countProgress(month);
           const isActive = pathname === `/dashboard/month/${month.id}`;
           const isDone = pct === 100;
@@ -167,11 +178,13 @@ export function Sidebar({
               name="No-Code"
               hint="N8N · Make"
               active={pathType === 'no-code'}
+              onClick={() => handlePathSwitch('no-code')}
             />
             <PathButton
               name="Developer"
               hint="APIs · Code"
               active={pathType === 'developer'}
+              onClick={() => handlePathSwitch('developer')}
             />
           </div>
         </div>
@@ -268,13 +281,16 @@ function PathButton({
   name,
   hint,
   active,
+  onClick,
 }: {
   name: string;
   hint: string;
   active: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
+      onClick={onClick}
       className={`text-left px-3 py-2.5 border rounded-[10px] flex flex-col gap-1 transition-colors duration-150
         ${
           active

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
+import { PathProvider } from "@/lib/path-context";
 
 type Props = {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ export function DashboardShell({ children, streakCount, activeDays, overallProgr
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <>
+    <PathProvider pathType={pathType}>
       {/* Mobile sidebar overlay */}
       {mobileMenuOpen && (
         <>
@@ -72,6 +73,6 @@ export function DashboardShell({ children, streakCount, activeDays, overallProgr
           </main>
         </div>
       </div>
-    </>
+    </PathProvider>
   );
 }

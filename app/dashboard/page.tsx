@@ -1,16 +1,19 @@
 import { fetchProgress } from '@/actions/progress';
 import { fetchStreak } from '@/actions/streak';
 import { auth } from '@/auth';
+import { dbConnect } from '@/lib/db/connect';
+import User from '@/lib/db/models/User';
 import { Ring } from '@/components/ui/ring';
-import { mockMonths } from '@/lib/mock-data';
+import { mockMonths, type Month } from '@/lib/mock-data';
+import { filterMonthsByPath, type PathType } from '@/lib/path-filter';
 import { ChevronRight, Play, Plus } from 'lucide-react';
 import Link from 'next/link';
 
-function countAllTasks() {
+function countAllTasks(months: Month[]) {
   let done = 0;
   let total = 0;
   let monthsStarted = 0;
-  for (const month of mockMonths) {
+  for (const month of months) {
     let monthHasProgress = false;
     for (const week of month.weeks) {
       for (const item of week.items) {
@@ -29,9 +32,17 @@ function countAllTasks() {
 }
 
 export default async function DashboardPage() {
-  const { done, total, monthsStarted } = countAllTasks();
-
   const session = await auth();
+  let pathType: PathType = 'developer';
+  if (session?.user?.id) {
+    await dbConnect();
+    const user = await User.findById(session.user.id).select('pathType').lean();
+    if (user?.pathType) pathType = user.pathType as PathType;
+  }
+
+  const filtered = filterMonthsByPath(mockMonths, pathType);
+  const { done, total, monthsStarted } = countAllTasks(filtered);
+
   const [streak, progress] = await Promise.all([
     fetchStreak(),
     fetchProgress(),
@@ -40,7 +51,7 @@ export default async function DashboardPage() {
   const completedItemCount = Object.values(progress.completedItems).filter(
     Boolean,
   ).length;
-  const totalItemCount = mockMonths.reduce(
+  const totalItemCount = filtered.reduce(
     (acc, m) => acc + m.weeks.reduce((a, w) => a + w.items.length, 0),
     0,
   );
@@ -150,8 +161,8 @@ export default async function DashboardPage() {
 
       {/* Main grid: Roadmap + Today card */}
       <div className="grid grid-cols-[1.6fr_1fr] gap-4.5">
-        <RoadmapTable />
-        <TodayCard />
+        <RoadmapTable months={filtered} />
+        <TodayCard months={filtered} />
       </div>
     </>
   );
@@ -194,7 +205,7 @@ function StatCard({
   );
 }
 
-function RoadmapTable() {
+function RoadmapTable({ months }: { months: Month[] }) {
   return (
     <div className="border border-zen-line bg-zen-surface rounded-[14px] overflow-hidden">
       {/* Header */}
@@ -217,7 +228,7 @@ function RoadmapTable() {
 
       {/* Rows */}
       <div className="flex flex-col">
-        {mockMonths.map((month) => {
+        {months.map((month) => {
           let done = 0;
           let total = 0;
           for (const week of month.weeks) {
@@ -272,14 +283,14 @@ function RoadmapTable() {
   );
 }
 
-function TodayCard() {
+function TodayCard({ months }: { months: Month[] }) {
   const todayItems: {
     title: string;
     type: string;
     duration: string;
     completed: boolean;
   }[] = [];
-  for (const month of mockMonths) {
+  for (const month of months) {
     for (const week of month.weeks) {
       for (const item of week.items) {
         if (todayItems.length >= 4) break;

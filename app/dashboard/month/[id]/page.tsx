@@ -4,6 +4,10 @@ import { fetchProgress } from "@/actions/progress";
 import { fetchResourcesForWeeks } from "@/actions/resources";
 import { fetchNotes } from "@/actions/notes";
 import { MonthPageClient } from "@/components/month/MonthPageClient";
+import { auth } from "@/auth";
+import { dbConnect } from "@/lib/db/connect";
+import User from "@/lib/db/models/User";
+import { filterMonthsByPath, type PathType } from "@/lib/path-filter";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -11,7 +15,17 @@ type Props = {
 
 export default async function MonthPage({ params }: Props) {
   const { id } = await params;
-  const month = mockMonths.find((m) => m.id === id);
+
+  let pathType: PathType = "developer";
+  const session = await auth();
+  if (session?.user?.id) {
+    await dbConnect();
+    const user = await User.findById(session.user.id).select("pathType").lean();
+    if (user?.pathType) pathType = user.pathType as PathType;
+  }
+
+  const filtered = filterMonthsByPath(mockMonths, pathType);
+  const month = filtered.find((m) => m.id === id);
 
   if (!month) notFound();
 

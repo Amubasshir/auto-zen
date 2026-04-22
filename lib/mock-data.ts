@@ -15,6 +15,7 @@ export type Item = {
   url?: string;
   completed: boolean;
   tasks: Task[];
+  pathType?: 'no-code' | 'developer';
 };
 
 export type Week = {
@@ -598,9 +599,23 @@ export const mockMonths: Month[] = [
             type: 'github',
             url: 'https://github.com/openai/whisper',
             completed: false,
+            pathType: 'developer',
             tasks: [
               { id: 'task-3-3-4-1', label: 'Run Whisper locally on a sample audio file', completed: false },
               { id: 'task-3-3-4-2', label: 'Integrate transcription output into an n8n workflow', completed: false },
+            ],
+          },
+          {
+            id: 'item-3-3-5',
+            title: 'n8n OpenAI Node: Whisper API Transcription',
+            type: 'docs',
+            url: 'https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/',
+            completed: false,
+            pathType: 'no-code',
+            tasks: [
+              { id: 'task-3-3-5-1', label: 'Add an OpenAI node and transcribe a sample meeting recording', completed: false },
+              { id: 'task-3-3-5-2', label: 'Configure language and temperature parameters for cleaner output', completed: false },
+              { id: 'task-3-3-5-3', label: 'Chain transcription to a GPT summarisation node and save to Notion', completed: false },
             ],
           },
         ],
@@ -720,7 +735,7 @@ export const mockMonths: Month[] = [
       {
         id: 'week-4-3',
         weekNumber: 3,
-        title: 'Dev Path: LangChain & Multi-Agent Frameworks',
+        title: 'Advanced Agent Patterns',
         items: [
           {
             id: 'item-4-3-1',
@@ -728,6 +743,7 @@ export const mockMonths: Month[] = [
             type: 'course',
             url: 'https://academy.langchain.com',
             completed: false,
+            pathType: 'developer',
             tasks: [
               { id: 'task-4-3-1-1', label: 'Complete Introduction to LangGraph module', completed: false },
               { id: 'task-4-3-1-2', label: 'Build a simple ReAct agent', completed: false },
@@ -739,6 +755,7 @@ export const mockMonths: Month[] = [
             type: 'docs',
             url: 'https://docs.crewai.com',
             completed: false,
+            pathType: 'developer',
             tasks: [
               { id: 'task-4-3-2-1', label: 'Read Agents, Tasks, and Crews overview', completed: false },
               { id: 'task-4-3-2-2', label: 'Run the quickstart multi-agent crew', completed: false },
@@ -750,9 +767,49 @@ export const mockMonths: Month[] = [
             type: 'docs',
             url: 'https://microsoft.github.io/autogen/',
             completed: false,
+            pathType: 'developer',
             tasks: [
               { id: 'task-4-3-3-1', label: 'Read the AutoGen overview and architecture', completed: false },
               { id: 'task-4-3-3-2', label: 'Run the two-agent conversation quickstart', completed: false },
+            ],
+          },
+          {
+            id: 'item-4-3-4',
+            title: 'n8n Advanced Agent Types & Tool-Calling Patterns',
+            type: 'docs',
+            url: 'https://docs.n8n.io/advanced-ai/examples/introduction/',
+            completed: false,
+            pathType: 'no-code',
+            tasks: [
+              { id: 'task-4-3-4-1', label: 'Build a ReAct Agent with 3 connected tools in n8n', completed: false },
+              { id: 'task-4-3-4-2', label: 'Set up an HTTP Request Tool to fetch live data from an API', completed: false },
+              { id: 'task-4-3-4-3', label: 'Use $fromAI() to let the agent decide parameters at runtime', completed: false },
+            ],
+          },
+          {
+            id: 'item-4-3-5',
+            title: 'n8n Multi-Agent Systems with Sub-Workflow Chaining',
+            type: 'docs',
+            url: 'https://docs.n8n.io/advanced-ai/examples/understand-tools/',
+            completed: false,
+            pathType: 'no-code',
+            tasks: [
+              { id: 'task-4-3-5-1', label: 'Create a Research Agent and a Writer Agent as separate sub-workflows', completed: false },
+              { id: 'task-4-3-5-2', label: 'Build an Orchestrator Agent that chains them via Call n8n Workflow Tool', completed: false },
+              { id: 'task-4-3-5-3', label: 'Add a Human-in-the-Loop approval step between agent handoffs', completed: false },
+            ],
+          },
+          {
+            id: 'item-4-3-6',
+            title: 'Flowise: Visual Multi-Agent Builder',
+            type: 'docs',
+            url: 'https://docs.flowiseai.com/',
+            completed: false,
+            pathType: 'no-code',
+            tasks: [
+              { id: 'task-4-3-6-1', label: 'Install Flowise and build a basic Chatflow with an LLM chain', completed: false },
+              { id: 'task-4-3-6-2', label: 'Recreate the 2-agent pipeline using Agentflow V2', completed: false },
+              { id: 'task-4-3-6-3', label: 'Compare Flowise vs n8n agent capabilities and note trade-offs', completed: false },
             ],
           },
         ],
@@ -799,6 +856,7 @@ export const mockMonths: Month[] = [
             type: 'docs',
             url: 'https://railway.app',
             completed: false,
+            pathType: 'developer',
             tasks: [
               { id: 'task-5-1-1-1', label: 'Read the Railway getting started guide', completed: false },
               { id: 'task-5-1-1-2', label: 'Deploy a self-hosted n8n instance on Railway', completed: false },
@@ -811,6 +869,7 @@ export const mockMonths: Month[] = [
             type: 'docs',
             url: 'https://render.com',
             completed: false,
+            pathType: 'developer',
             tasks: [
               { id: 'task-5-1-2-1', label: 'Compare Render vs Railway pricing and limits', completed: false },
               { id: 'task-5-1-2-2', label: 'Deploy a simple webhook receiver service', completed: false },
@@ -1055,9 +1114,23 @@ export const mockMonths: Month[] = [
             type: 'docs',
             url: 'https://streamlit.io',
             completed: false,
+            pathType: 'developer',
             tasks: [
               { id: 'task-6-3-2-1', label: 'Build a Streamlit app to visualise workflow output data', completed: false },
               { id: 'task-6-3-2-2', label: 'Deploy to Streamlit Community Cloud', completed: false },
+            ],
+          },
+          {
+            id: 'item-6-3-4',
+            title: 'Softr: No-Code Client Portal Builder',
+            type: 'docs',
+            url: 'https://docs.softr.io',
+            completed: false,
+            pathType: 'no-code',
+            tasks: [
+              { id: 'task-6-3-4-1', label: 'Set up a client portal connected to an Airtable base', completed: false },
+              { id: 'task-6-3-4-2', label: 'Configure user authentication and group-based permissions', completed: false },
+              { id: 'task-6-3-4-3', label: 'Publish the portal and connect it to an n8n or Make workflow', completed: false },
             ],
           },
           {

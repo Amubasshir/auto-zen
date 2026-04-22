@@ -6,11 +6,16 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { fetchStreak } from "@/actions/streak";
 import { fetchProgress } from "@/actions/progress";
 import { mockMonths } from "@/lib/mock-data";
+import { filterMonthsByPath, type PathType } from "@/lib/path-filter";
 
-function computeOverallProgress(completedItems: Record<string, boolean>): number {
+function computeOverallProgress(
+  completedItems: Record<string, boolean>,
+  pathType: PathType,
+): number {
+  const filtered = filterMonthsByPath(mockMonths, pathType);
   let total = 0;
   let done = 0;
-  for (const month of mockMonths) {
+  for (const month of filtered) {
     for (const week of month.weeks) {
       for (const item of week.items) {
         total++;
@@ -37,7 +42,7 @@ export default async function DashboardLayout({
   }
 
   const [streak, progress] = await Promise.all([fetchStreak(), fetchProgress()]);
-  const overallProgress = computeOverallProgress(progress.completedItems);
+  const overallProgress = computeOverallProgress(progress.completedItems, pathType);
 
   return (
     <DashboardShell
