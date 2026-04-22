@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Read the following to get the full context of the projects:
 
+- @context/general-guidelines.md
 - @context/project-overview.md
 - @context/coding-standards.md
 - @context/ai-interaction.md
