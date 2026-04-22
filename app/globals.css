@@ -135,6 +135,14 @@
   html {
     @apply font-sans h-full;
   }
+  button,
+  [role="button"],
+  a,
+  summary,
+  select,
+  label[for] {
+    cursor: pointer;
+  }
 }
 
 /* ===== Custom base styles ===== */
