@@ -15,7 +15,7 @@ export function StepHours({ value, onChange }: Props) {
       </div>
 
       <div className="flex flex-col items-center gap-6">
-        <span className="text-6xl font-semibold text-zen-accent tabular-nums">{value}</span>
+        <span className="text-6xl font-semibold text-jade tabular-nums">{value}</span>
         <span className="text-sm text-zen-muted">hours / week</span>
 
         <input
@@ -25,7 +25,7 @@ export function StepHours({ value, onChange }: Props) {
           step={1}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full accent-[var(--color-zen-accent)] cursor-pointer"
+          className="w-full accent-[var(--color-jade)] cursor-pointer"
           aria-label="Weekly hours"
         />
 

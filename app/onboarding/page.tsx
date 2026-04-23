@@ -6,6 +6,7 @@ import { StepPath } from "@/components/onboarding/StepPath";
 import { StepHours } from "@/components/onboarding/StepHours";
 import { StepTarget } from "@/components/onboarding/StepTarget";
 import { StepStart } from "@/components/onboarding/StepStart";
+import Image from "next/image";
 
 type PathType = "no-code" | "developer";
 
@@ -62,17 +63,33 @@ export default function OnboardingPage() {
   return (
     <div className="w-full max-w-lg">
       {/* Logo */}
-      <div className="mb-8 text-center">
-        <span className="text-2xl font-serif text-zen-text tracking-tight">AutoZen</span>
-        <p className="mt-1 text-xs text-zen-muted">Let&apos;s set up your learning profile</p>
+      <div className="mb-8 flex flex-col items-center gap-2">
+        <Image src="/autozen.png" alt="AutoZen" width={56} height={56} className="block" />
+        <p className="text-xs text-zen-muted">Let&apos;s set up your learning profile</p>
       </div>
 
       {/* Progress bar */}
-      <div className="mb-8 h-1 rounded-full bg-zen-surface overflow-hidden">
-        <div
-          className="h-full rounded-full bg-zen-accent transition-all duration-500"
-          style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
-        />
+      <div className="mb-8 flex items-center gap-2.5">
+        {[1, 2, 3, 4].map((s) => (
+          <div key={s} className="flex-1 flex flex-col items-center gap-1.5">
+            <div className="w-full h-1.5 rounded-full bg-zen-surface overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all ease-[cubic-bezier(0.4,0,0.2,1)] duration-700"
+                style={{
+                  width: step >= s ? '100%' : step === s - 1 ? '0%' : '0%',
+                  backgroundColor: step >= s ? 'var(--color-jade)' : 'transparent',
+                }}
+              />
+            </div>
+            <span
+              className={`text-[10px] font-mono tracking-wider transition-colors duration-500 ${
+                step >= s ? 'text-jade' : 'text-zen-muted'
+              }`}
+            >
+              {s}
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* Card */}
@@ -100,7 +117,7 @@ export default function OnboardingPage() {
             type="button"
             onClick={handleNext}
             disabled={!canAdvance() || saving}
-            className="rounded-lg bg-zen-accent px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-40 hover:brightness-110 transition-all cursor-pointer"
+            className="rounded-lg bg-jade px-6 py-2.5 text-sm font-semibold text-jade-ink disabled:opacity-40 hover:brightness-110 transition-all cursor-pointer"
           >
             {saving ? "Saving…" : step < TOTAL_STEPS ? "Continue →" : "Start Learning →"}
           </button>

@@ -46,7 +46,7 @@ export function StepStart({ value, onChange }: Props) {
           <select
             value={clampedDay}
             onChange={(e) => update(year, month, parseInt(e.target.value, 10))}
-            className="rounded-xl border border-zen-border bg-zen-surface px-3 py-3 text-zen-text text-sm focus:outline-none focus:border-zen-accent cursor-pointer"
+            className="rounded-xl border border-zen-border bg-zen-surface px-3 py-3 text-zen-text text-sm focus:outline-none focus:border-jade cursor-pointer"
           >
             {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => (
               <option key={d} value={d}>{String(d).padStart(2, "0")}</option>
@@ -60,7 +60,7 @@ export function StepStart({ value, onChange }: Props) {
           <select
             value={month}
             onChange={(e) => update(year, parseInt(e.target.value, 10), clampedDay)}
-            className="rounded-xl border border-zen-border bg-zen-surface px-3 py-3 text-zen-text text-sm focus:outline-none focus:border-zen-accent cursor-pointer"
+            className="rounded-xl border border-zen-border bg-zen-surface px-3 py-3 text-zen-text text-sm focus:outline-none focus:border-jade cursor-pointer"
           >
             {MONTHS.map((name, i) => (
               <option key={name} value={i + 1}>{name}</option>
@@ -74,7 +74,7 @@ export function StepStart({ value, onChange }: Props) {
           <select
             value={year}
             onChange={(e) => update(parseInt(e.target.value, 10), month, clampedDay)}
-            className="rounded-xl border border-zen-border bg-zen-surface px-3 py-3 text-zen-text text-sm focus:outline-none focus:border-zen-accent cursor-pointer"
+            className="rounded-xl border border-zen-border bg-zen-surface px-3 py-3 text-zen-text text-sm focus:outline-none focus:border-jade cursor-pointer"
           >
             {years.map((y) => (
               <option key={y} value={y}>{y}</option>

@@ -42,7 +42,7 @@ export function StepPath({ value, onChange }: Props) {
             className={cn(
               "flex flex-col gap-2 rounded-xl border p-5 text-left transition-all cursor-pointer",
               value === opt.value
-                ? "border-zen-accent bg-zen-accent/10 shadow-[0_0_0_2px] shadow-zen-accent/40"
+                ? "border-jade bg-jade/10 shadow-[0_0_0_2px] shadow-jade/40"
                 : "border-zen-border bg-zen-surface hover:border-zen-muted/60",
             )}
           >

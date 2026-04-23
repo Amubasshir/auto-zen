@@ -25,7 +25,7 @@ export function StepTarget({ value, onChange }: Props) {
             className={`
               rounded-xl border py-4 text-lg font-semibold transition-all cursor-pointer
               ${value === preset
-                ? "border-zen-accent bg-zen-accent/10 text-zen-accent shadow-[0_0_0_2px] shadow-zen-accent/40"
+                ? "border-jade bg-jade/10 text-jade shadow-[0_0_0_2px] shadow-jade/40"
                 : "border-zen-border bg-zen-surface text-zen-text hover:border-zen-muted/60"
               }
             `}
@@ -46,7 +46,7 @@ export function StepTarget({ value, onChange }: Props) {
             const n = Number(e.target.value);
             if (n >= 1 && n <= 20) onChange(n);
           }}
-          className="w-20 rounded-lg border border-zen-border bg-zen-surface px-3 py-2 text-center text-zen-text text-sm focus:outline-none focus:border-zen-accent"
+          className="w-20 rounded-lg border border-zen-border bg-zen-surface px-3 py-2 text-center text-zen-text text-sm focus:outline-none focus:border-jade"
           aria-label="Custom weekly target"
         />
         <span className="text-sm text-zen-muted">items / week</span>
